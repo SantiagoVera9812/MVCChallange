@@ -11,7 +11,8 @@ import SwiftUI
 struct MVCChallangeGlobantApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            
+            MovieViewController.shared.createContentView()
         }
     }
 }
