@@ -1,13 +1,14 @@
 //
-//  ContentView.swift
+//  GridLayoutView.swift
 //  MVCChallangeGlobant
 //
-//  Created by Christian Santiago Vera Rojas on 27/11/24.
+//  Created by Christian Santiago Vera Rojas on 3/12/24.
 //
 
+import Foundation
 import SwiftUI
 
-struct ContentView: View {
+struct GridLayoutView: View {
     
     private let onNext: () -> Void
     private let onPrevious: () -> Void
@@ -28,7 +29,8 @@ struct ContentView: View {
         
             VStack {
                 
-                ListVerticallyMovieViews(listOfMovies: listOfMovies)
+                ListHorizontalMovieViews(listOfMovies: listOfMovies)
+               
                 
                 Spacer()
                 HStack {

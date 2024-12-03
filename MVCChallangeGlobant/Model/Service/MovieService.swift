@@ -8,13 +8,27 @@
 import Foundation
 import SwiftUI
 
+protocol MovieServiceDelegate{
+    
+    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponse])
+    func getMovieDetails(movieDetails: MovieDetailsResponse)
+    
+}
+
 class MovieService {
+    
+    var delegate: MovieServiceDelegate?
     
     func getMoviesList(page: Int, language: String, completion: @escaping (MovieListResponse?) -> Void){
         
         guard let weatherURL = Constants.Urls.urlForMovieList(page: page, languague: language) else { return}
         
-        urlMovieService(weatherURL: weatherURL, completion: completion)
+        urlMovieService(weatherURL: weatherURL) { [weak self] (response: MovieListResponse?) in
+                    completion(response)
+                    if let movieList = response {
+                        self?.delegate?.getMovieService(movieTotalResponse: movieList.total_pages, movieList: movieList.results) // Call delegate method
+                    }
+                }
     }
     
     func getMovieDetails(idMovie: Int, language: String = "en", completion: @escaping (MovieDetailsResponse?) -> Void) {
@@ -60,6 +74,7 @@ extension MovieService {
             WebService().load(resource: weatherResource) { result in
                 if let response = result {
                     completion(response)
+                    
                 } else {
                     completion(nil)
                 }
