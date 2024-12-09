@@ -9,16 +9,18 @@ import SwiftUI
 
 struct ContentView: View {
     
-    private let onNext: () -> Void
-    private let onPrevious: () -> Void
-    private let getMovieList: (@escaping ([MovieResponse]) -> Void) -> Void
+    typealias doSomething = () -> Void
+    
+    private let onNext: doSomething
+    private let onPrevious: doSomething
+
     @State private var listOfMovies: [MovieResponse]
+    @State var inputText: String = ""
     
     
-    init(onNext: @escaping () -> Void, onPrevious: @escaping () -> Void, getMovieList: @escaping (@escaping ([MovieResponse]) -> Void) -> Void, listOfMovies: [MovieResponse]) {
+    init(onNext: @escaping doSomething, onPrevious: @escaping doSomething, listOfMovies: [MovieResponse]) {
         self.onNext = onNext
         self.onPrevious = onPrevious
-        self.getMovieList = getMovieList
         self.listOfMovies = listOfMovies
         
         
@@ -28,7 +30,16 @@ struct ContentView: View {
         
             VStack {
                 
-                ListVerticallyMovieViews(listOfMovies: listOfMovies)
+                TextLabelInput(inputText: $inputText, enterText: "Enter a movie")
+                
+                NavigationView{
+                    ListVerticallyMovieViews(listOfMovies: listOfMovies){
+                        
+                        movieID in
+                        
+                        
+                    }
+                }.navigationTitle("Movies")
                 
                 Spacer()
                 HStack {

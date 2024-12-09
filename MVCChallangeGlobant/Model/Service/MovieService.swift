@@ -8,37 +8,9 @@
 import Foundation
 import SwiftUI
 
-protocol MovieServiceDelegate{
-    
-    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponse])
-    func getMovieDetails(movieDetails: MovieDetailsResponse)
-    
-}
 
-class MovieService {
-    
-    var delegate: MovieServiceDelegate?
-    
-    func getMoviesList(page: Int, language: String, completion: @escaping (MovieListResponse?) -> Void){
+class BaseMovieService {
         
-        guard let weatherURL = Constants.Urls.urlForMovieList(page: page, languague: language) else { return}
-        
-        urlMovieService(weatherURL: weatherURL) { [weak self] (response: MovieListResponse?) in
-                    completion(response)
-                    if let movieList = response {
-                        self?.delegate?.getMovieService(movieTotalResponse: movieList.total_pages, movieList: movieList.results) // Call delegate method
-                    }
-                }
-    }
-    
-    func getMovieDetails(idMovie: Int, language: String = "en", completion: @escaping (MovieDetailsResponse?) -> Void) {
-        
-            guard let movieDetailsURL = Constants.Urls.urlForMovieIDDetails(idMovie: idMovie, languague: language) else { return }
-        
-        urlMovieService(weatherURL: movieDetailsURL, completion: completion)
-            
-        }
-    
     //Mover a una capa de vista
     func getAsyncImage(posterPath: String) -> some View {
         if let url = Constants.Urls.urlForMoviePoster(poster_path: posterPath) {
@@ -63,9 +35,11 @@ class MovieService {
 
 }
 
-extension MovieService {
+extension BaseMovieService {
     
-    private func urlMovieService<T: Decodable>(weatherURL: URL, completion: @escaping (T?) -> Void) {
+    
+    
+    func urlMovieService<T: Decodable>(weatherURL: URL, completion: @escaping (T?) -> Void) {
             let weatherResource = Resource<T>(url: weatherURL) { data in
     
                 return try? JSONDecoder().decode(T.self, from: data)
@@ -80,5 +54,44 @@ extension MovieService {
                 }
             }
         }
+    
+}
+
+class MovieListService: BaseMovieService {
+    
+    var delegate: MovieServiceDelegate?
+    
+    func getMoviesList(page: Int, language: String, completion: @escaping (MovieListResponse?) -> Void){
+        
+        guard let weatherURL = Constants.Urls.urlForMovieList(page: page, languague: language) else { return}
+        
+        urlMovieService(weatherURL: weatherURL) { [weak self] (response: MovieListResponse?) in
+                    completion(response)
+                    if let movieList = response {
+                        self?.delegate?.getMovieService(movieTotalResponse: movieList.total_pages, movieList: movieList.results) // Call delegate method
+                    }
+                }
+    }
+    
+    
+}
+
+class MovieDetailsService: BaseMovieService {
+    
+    var delegate: MovieDetailsServiceDelegate?
+    
+    func getMovieDetails(idMovie: Int, language: String = "en", completion: @escaping (MovieDetailsResponse?) -> Void) {
+        
+            guard let movieDetailsURL = Constants.Urls.urlForMovieIDDetails(idMovie: idMovie, languague: language) else { return }
+        
+        urlMovieService(weatherURL: movieDetailsURL){ [weak self] (response: MovieDetailsResponse?) in
+            completion(response)
+            if let details = response {
+                self?.delegate?.getMovieDetails(movieDetails: details) // Call delegate method
+            }
+        }
+            
+        }
+    
     
 }

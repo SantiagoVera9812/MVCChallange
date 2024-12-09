@@ -11,6 +11,8 @@ import SwiftUI
 struct ListVerticallyMovieViews: View {
     
     let listOfMovies: [MovieResponse]
+    let onMovieSelected: (Int) -> Void
+    
     
     var body: some View {
         
@@ -19,9 +21,14 @@ struct ListVerticallyMovieViews: View {
             VStack {
                 
                     ForEach(listOfMovies, id: \.id) { movieFound in
-                        MovieListViewCell(
-                            movie: movieFound
-                        )
+                        NavigationLink(destination: DetailsControllerWrapper(movieId: movieFound.id)){
+                            MovieListViewCell(
+                                movie: movieFound) { movieID in
+                                    
+                                    
+                                    
+                                }
+                        }
                         
                         Spacer(minLength: 20)
                         
@@ -36,7 +43,9 @@ struct ListVerticallyMovieViews: View {
 }
 
 struct ListHorizontalMovieViews: View {
+    
     let listOfMovies: [MovieResponse]
+    let onMovieSelected: (Int) -> Void
     
   // Define the number of columns for the grid
   let columns = [
@@ -48,13 +57,21 @@ struct ListHorizontalMovieViews: View {
       LazyVGrid(columns: columns, spacing: 5) { // Uniform spacing between rows
         ForEach(listOfMovies, id: \.id) { movieFound in
           VStack {
-            HorizontalMovieView(
               
-                movie: movieFound
-            )
-            .aspectRatio(2/3, contentMode: .fill) // Fixed aspect ratio for the images
-            .cornerRadius(12) // Rounded corners for each movie poster
-            .shadow(radius: 6) // Add shadow for a sleek look
+              NavigationLink(destination: DetailsControllerWrapper(movieId: movieFound.id)){
+                  HorizontalMovieView(
+                    
+                    movie: movieFound
+                  ) { movieID in
+                      
+                      print(movieID)
+                      
+                  }
+                  
+                  .aspectRatio(2/3, contentMode: .fill) // Fixed aspect ratio for the images
+                  .cornerRadius(12) // Rounded corners for each movie poster
+                  .shadow(radius: 6) // Add shadow for a sleek look
+              }
           }
         }
       }

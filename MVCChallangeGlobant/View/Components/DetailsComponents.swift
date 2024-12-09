@@ -29,4 +29,86 @@ struct LoadingView: View {
     }
 }
 
+struct GenreListView: View {
+    
+    let genres: [Genre]
+    
+    var body: some View {
+        
+        HStack {
+                    ForEach(genres.indices, id: \.self) { index in
+                        Text(genres[index].name)
+                        
+                        if index < genres.count - 1 {
+                            Text(".")
+                        }
+                    }
+                }
+                .padding()
+            }
+    }
+
+struct MovieImageDetails: View {
+    
+    let titulo: String
+    let voteAvarage: Float
+    let fechaDeLanzamiento: String
+    let posterPath: String
+   
+    var body: some View {
+        
+        GeometryReader { geometry in
+            
+            ZStack{
+                
+                MoviePosterView(posterPath: posterPath)
+                    .scaledToFill()
+                    .clipped()
+                    .blur(radius: 10)
+                    .opacity(0.7)
+                    .frame(height: geometry.size.height * 0.5)
+                    
+                
+                VStack{
+                    HStack {
+                        
+                        MoviePosterView(posterPath: posterPath)
+                            .scaledToFit()
+                            
+                            
+                        
+                        VStack(alignment: .leading) {
+                            
+                            Text(titulo)
+                                .font(.title)
+                                .foregroundStyle(.white)
+                                .fontWeight(.bold)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.2)
+                            
+                            Text(fechaDeLanzamiento)
+                                .font(.subheadline)
+                                .foregroundStyle(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.2)
+                            
+                            StarRatingView(rating: voteAvarage)
+                                .padding(.top, 5)
+                            
+                        }
+                        .padding(20)
+                        
+                    }
+                }
+                
+                .cornerRadius(12)
+                .padding()
+            }
+        }
+    }
+        
+        
+        
+    }
+
 

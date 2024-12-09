@@ -10,6 +10,12 @@ import SwiftUI
 import UIKit
 import Combine
 
+protocol MovieServiceDelegate{
+    
+    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponse])
+    
+}
+
 struct MovieViewBuilder {
     static func makeContentView() -> some View {
         let movieViewController = MovieViewController()
@@ -26,43 +32,22 @@ protocol PageDelegate: AnyObject {
     func getMovieList() -> [MovieResponse]
 }
 
-class MovieViewController: UIViewController, PageDelegate, ObservableObject {
+class MovieViewController: UIViewController {
     
-    @Published var page: Int = 1
+    var page: Int = 1
     var totalResponses: Int = 500
     var movieListPage: [MovieResponse] = []
-    private var movieService: MovieService?
+    private var movieService: MovieListService
     
     func getPosterView(for posterPath: String) -> some View {
-        return movieService?.getAsyncImage(posterPath: posterPath)
+        return movieService.getAsyncImage(posterPath: posterPath)
     }
     
-    func nextPage() {
-        if page < totalResponses {
-            page += 1
-            fetchMovieList()
-            
-        }
-        print(page)
-    }
-    
-    func getMovieList() -> [MovieResponse] {
-        return movieListPage
-    }
-    
-    func previousPage() {
-        if page > 1 {
-            page -= 1
-            fetchMovieList()
-        }
-        print(page)
-    }
-    
-    init(){
+    init(movieService: MovieListService = MovieListService()){
+        self.movieService = movieService
         super.init(nibName: nil, bundle: nil)
-        movieService = MovieService()
         fetchMovieList()
-        movieService?.delegate = self
+        self.movieService.delegate = self
         
         
     }
@@ -77,9 +62,10 @@ class MovieViewController: UIViewController, PageDelegate, ObservableObject {
         }
     
     func fetchMovieList(language: String = "en") {
-        movieService?.getMoviesList(page: page, language: language) { [weak self] movieListResponse in
+        
+        movieService.getMoviesList(page: page, language: language) { [weak self] movieListResponse in
             
-            DispatchQueue.main.async {
+            
                 if let movies = movieListResponse {
                     
                     print(self?.totalResponses ?? 0)
@@ -97,7 +83,7 @@ class MovieViewController: UIViewController, PageDelegate, ObservableObject {
                     print("error")
                 }
                 
-            }
+            
         }
     }
     
@@ -124,8 +110,8 @@ class MovieViewController: UIViewController, PageDelegate, ObservableObject {
         
     }
     
-    func fetchMovieDetailsList(idMovie: Int, language: String) {
-        movieService?.getMovieDetails(idMovie: idMovie, language: language) { [weak self] movieListResponse in
+   /* func fetchMovieDetailsList(idMovie: Int, language: String) {
+        movieService.getMovieDetails(idMovie: idMovie, language: language) { [weak self] movieListResponse in
             
             DispatchQueue.main.async {
                 if let movies = movieListResponse {
@@ -135,6 +121,32 @@ class MovieViewController: UIViewController, PageDelegate, ObservableObject {
                 }
             }
         }
+    } */
+    
+    
+}
+
+extension MovieViewController : PageDelegate {
+    
+    func nextPage() {
+        if page < totalResponses {
+            page += 1
+            fetchMovieList()
+            
+        }
+        print(page)
+    }
+    
+    func getMovieList() -> [MovieResponse] {
+        return movieListPage
+    }
+    
+    func previousPage() {
+        if page > 1 {
+            page -= 1
+            fetchMovieList()
+        }
+        print(page)
     }
     
     
@@ -155,13 +167,7 @@ extension MovieViewController : MovieServiceDelegate {
     
 
     
-    func getMovieDetails(movieDetails: MovieDetailsResponse) {
-        
-        
-    }
-    
-    
-    
+
 }
 
 extension MovieViewController {
@@ -172,9 +178,6 @@ extension MovieViewController {
                 GridLayoutView(
                     onNext: { self.nextPage() },
                     onPrevious: { self.previousPage() },
-                    getMovieList: { completion in
-                        completion(self.getMovieList())
-                    },
                     listOfMovies: movieListPage
                     
                 )
@@ -192,9 +195,6 @@ extension MovieViewController {
                 ContentView(
                     onNext: { self.nextPage() },
                     onPrevious: { self.previousPage() },
-                    getMovieList: { completion in
-                        completion(self.getMovieList())
-                    },
                     listOfMovies: movieListPage
                     
                 )
@@ -206,6 +206,16 @@ extension MovieViewController {
     }
     
 }
+
+extension MovieViewController {
+    
+    func navigateToMovieDetail(movieID: Int) {
+        let movieDetailVC = MovieDetailViewController(movieID: movieID)
+            movieDetailVC.movieID = movieID // Set the selected movie ID
+            self.navigationController?.pushViewController(movieDetailVC, animated: true) // Navigate to the movie detail view controller
+        }
+}
+
 class ImageLoader: ObservableObject {
     @Published var image: UIImage? = nil
     var cancellable: AnyCancellable?

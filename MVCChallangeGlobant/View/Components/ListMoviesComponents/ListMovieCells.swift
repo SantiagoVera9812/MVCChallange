@@ -10,7 +10,9 @@ import SwiftUI
 
 struct MovieListViewCell: View{
     
+    
     let movie: MovieResponse
+    let onMovieSelected: (Int) -> Void
     
     var body: some View {
         
@@ -42,7 +44,7 @@ struct MovieListViewCell: View{
             }
         }
         .onTapGesture {
-            //NavLink to movie details
+            onMovieSelected(movie.id)
         }
         .background(.ultraThinMaterial)
         .cornerRadius(12)
@@ -55,6 +57,7 @@ struct HorizontalMovieView: View {
     
     
     let movie: MovieResponse
+    let onMovieSelected: (Int) -> Void
     
     var body: some View {
         
@@ -77,7 +80,7 @@ struct HorizontalMovieView: View {
             .padding()
         }
         .onTapGesture {
-            //NavLink to Movie Details
+            onMovieSelected(movie.id)
         }
         .background(.ultraThinMaterial)
         .cornerRadius(12)

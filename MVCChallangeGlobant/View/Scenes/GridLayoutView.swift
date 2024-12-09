@@ -10,26 +10,38 @@ import SwiftUI
 
 struct GridLayoutView: View {
     
-    private let onNext: () -> Void
-    private let onPrevious: () -> Void
-    private let getMovieList: (@escaping ([MovieResponse]) -> Void) -> Void
+    typealias doSomething = () -> Void
+    
+    
+    @State var inputText: String = ""
+    private let onNext: doSomething
+    private let onPrevious: doSomething
     @State private var listOfMovies: [MovieResponse]
     
     
-    init(onNext: @escaping () -> Void, onPrevious: @escaping () -> Void, getMovieList: @escaping (@escaping ([MovieResponse]) -> Void) -> Void, listOfMovies: [MovieResponse]) {
+    init(onNext: @escaping doSomething, onPrevious: @escaping doSomething, listOfMovies: [MovieResponse]) {
         self.onNext = onNext
         self.onPrevious = onPrevious
-        self.getMovieList = getMovieList
         self.listOfMovies = listOfMovies
-        
-        
+    
     }
     
     var body: some View {
         
+        TextLabelInput(inputText: $inputText, enterText: "Enter movie")
+        
             VStack {
                 
-                ListHorizontalMovieViews(listOfMovies: listOfMovies)
+                
+                NavigationView{
+                    ListHorizontalMovieViews(listOfMovies: listOfMovies){
+                        
+                        movieID in
+                        
+                        
+                    }
+                }.navigationTitle("Movies")
+             
                
                 
                 Spacer()
@@ -55,5 +67,6 @@ struct GridLayoutView: View {
 #Preview {
     
     ViewControllerWrapper()
+        
     
 }
