@@ -11,7 +11,7 @@ import SwiftUI
 struct MovieListViewCell: View{
     
     
-    let movie: MovieResponse
+    let movie: Movie
     let onMovieSelected: (Int) -> Void
     
     var body: some View {
@@ -56,7 +56,7 @@ struct MovieListViewCell: View{
 struct HorizontalMovieView: View {
     
     
-    let movie: MovieResponse
+    let movie: Movie
     let onMovieSelected: (Int) -> Void
     
     var body: some View {

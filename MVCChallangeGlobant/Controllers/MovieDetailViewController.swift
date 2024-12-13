@@ -11,13 +11,13 @@ import SwiftUI
 
 protocol MovieDetailsServiceDelegate{
     
-    func getMovieDetails(movieDetails: MovieDetailsResponse)
+    func getMovieDetails(movieDetails: MovieDetailsResponseDTO?)
 }
 
 protocol DetailFetchDelegate: AnyObject{
     
     var movieID: Int {get set}
-    var movieDetails: MovieDetailsResponse? { get set}
+    var movieDetails: MovieDetailsResponseDTO? { get set}
     
     func fetchMovieDetailsList(idMovie: Int, language: String)
 }
@@ -25,10 +25,10 @@ protocol DetailFetchDelegate: AnyObject{
 class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     
     var movieID: Int
+        
+    var movieDetails: MovieDetailsResponseDTO? = nil
     
-    var movieDetails: MovieDetailsResponse? = nil
-    
-    var movieListPage: [MovieDetailsResponse] = []
+    var movieListPage: [MovieDetailsResponseDTO] = []
     private var movieService: MovieDetailsService
     
     init(movieID: Int, movieService: MovieDetailsService = MovieDetailsService()){
@@ -54,20 +54,19 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
 
 
 extension MovieDetailViewController: MovieDetailsServiceDelegate {
-    
-    
-    func getMovieDetails(movieDetails: MovieDetailsResponse) {
+    func getMovieDetails(movieDetails: MovieDetailsResponseDTO?) {
+        
         
         DispatchQueue.main.async { [weak self] in
             self?.movieDetails = movieDetails
             self?.updateMovieListPage()
         }
-        
     }
     
+
     func updateMovieListPage(){
         print("update movie List")
-        print(self.movieDetails)
+                
         
         let hostingController = UIHostingController(rootView: createMovieDetails())
         
@@ -90,7 +89,7 @@ extension MovieDetailViewController{
     func createMovieDetails() -> some View {
         
             return AnyView(
-                MovieDetails(movieId: movieID, movie: movieDetails)
+                MovieDetails(movieId: movieID, movie: MovieDetail(dto: movieDetails))
             )
         
     }

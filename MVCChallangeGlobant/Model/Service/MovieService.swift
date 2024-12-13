@@ -61,14 +61,14 @@ class MovieListService: BaseMovieService {
     
     var delegate: MovieServiceDelegate?
     
-    func getMoviesList(page: Int, language: String, completion: @escaping (MovieListResponse?) -> Void){
+    func getMoviesList(page: Int, language: String, completion: @escaping (MovieListResponseDTO?) -> Void){
         
         guard let weatherURL = Constants.Urls.urlForMovieList(page: page, languague: language) else { return}
         
-        urlMovieService(weatherURL: weatherURL) { [weak self] (response: MovieListResponse?) in
+        urlMovieService(weatherURL: weatherURL) { [weak self] (response: MovieListResponseDTO?) in
                     completion(response)
                     if let movieList = response {
-                        self?.delegate?.getMovieService(movieTotalResponse: movieList.total_pages, movieList: movieList.results) // Call delegate method
+                        self?.delegate?.getMovieService(movieTotalResponse: movieList.total_pages ?? 1, movieList: movieList.results ) // Call delegate method
                     }
                 }
     }
@@ -80,11 +80,11 @@ class MovieDetailsService: BaseMovieService {
     
     var delegate: MovieDetailsServiceDelegate?
     
-    func getMovieDetails(idMovie: Int, language: String = "en", completion: @escaping (MovieDetailsResponse?) -> Void) {
+    func getMovieDetails(idMovie: Int, language: String = "en", completion: @escaping (MovieDetailsResponseDTO?) -> Void) {
         
             guard let movieDetailsURL = Constants.Urls.urlForMovieIDDetails(idMovie: idMovie, languague: language) else { return }
         
-        urlMovieService(weatherURL: movieDetailsURL){ [weak self] (response: MovieDetailsResponse?) in
+        urlMovieService(weatherURL: movieDetailsURL){ [weak self] (response: MovieDetailsResponseDTO?) in
             completion(response)
             if let details = response {
                 self?.delegate?.getMovieDetails(movieDetails: details) // Call delegate method

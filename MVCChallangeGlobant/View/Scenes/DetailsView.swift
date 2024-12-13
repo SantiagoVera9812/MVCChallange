@@ -11,7 +11,7 @@ import SwiftUI
 struct MovieDetails: View {
     
     let movieId: Int
-    let movie: MovieDetailsResponse?
+    let movie: MovieDetail
     
     var body: some View {
         
@@ -19,10 +19,10 @@ struct MovieDetails: View {
             
             VStack {
                 
-                MovieImageDetails(titulo: movie?.title ?? "", voteAvarage: movie?.vote_average ?? 0.0, fechaDeLanzamiento: movie?.release_date ?? "", posterPath: movie?.poster_path ?? "")
+                MovieImageDetails(titulo: movie.title, voteAvarage: movie.vote_average, fechaDeLanzamiento: movie.release_date, posterPath: movie.poster_path)
                     .frame(height: geometry.size.height * 0.5)
                 
-                GenreListView(genres: movie?.genres ?? [])
+                GenreListView(genres: movie.genres)
                     
                 
                 Text("Overview")
@@ -33,7 +33,7 @@ struct MovieDetails: View {
                     .lineLimit(1)
                     .minimumScaleFactor(0.2)
                 
-                Text(movie?.overview ?? "")
+                Text(movie.overview)
                     .font(.subheadline)
                     .foregroundStyle(.black)
                     .minimumScaleFactor(0.2)

@@ -13,12 +13,13 @@ struct ContentView: View {
     
     private let onNext: doSomething
     private let onPrevious: doSomething
+    
 
-    @State private var listOfMovies: [MovieResponse]
+    @State private var listOfMovies: [Movie]
     @State var inputText: String = ""
     
     
-    init(onNext: @escaping doSomething, onPrevious: @escaping doSomething, listOfMovies: [MovieResponse]) {
+    init(onNext: @escaping doSomething, onPrevious: @escaping doSomething, listOfMovies: [Movie]) {
         self.onNext = onNext
         self.onPrevious = onPrevious
         self.listOfMovies = listOfMovies

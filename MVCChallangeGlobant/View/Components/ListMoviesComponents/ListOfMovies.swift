@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ListVerticallyMovieViews: View {
     
-    let listOfMovies: [MovieResponse]
+    let listOfMovies: [Movie]
     let onMovieSelected: (Int) -> Void
     
     
@@ -21,12 +21,12 @@ struct ListVerticallyMovieViews: View {
             VStack {
                 
                     ForEach(listOfMovies, id: \.id) { movieFound in
-                        NavigationLink(destination: DetailsControllerWrapper(movieId: movieFound.id)){
+                        NavigationLink(destination: DetailsControllerWrapper(movieId: movieFound.id ?? 1)){
                             MovieListViewCell(
                                 movie: movieFound) { movieID in
                                     
                                     
-                                    
+                                
                                 }
                         }
                         
@@ -44,7 +44,7 @@ struct ListVerticallyMovieViews: View {
 
 struct ListHorizontalMovieViews: View {
     
-    let listOfMovies: [MovieResponse]
+    let listOfMovies: [Movie]
     let onMovieSelected: (Int) -> Void
     
   // Define the number of columns for the grid

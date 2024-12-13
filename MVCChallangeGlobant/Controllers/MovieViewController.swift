@@ -12,7 +12,7 @@ import Combine
 
 protocol MovieServiceDelegate{
     
-    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponse])
+    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?])
     
 }
 
@@ -29,14 +29,14 @@ protocol PageDelegate: AnyObject {
     
     func nextPage()
     func previousPage()
-    func getMovieList() -> [MovieResponse]
+    func getMovieList() -> [MovieResponseDTO?]
 }
 
 class MovieViewController: UIViewController {
     
     var page: Int = 1
     var totalResponses: Int = 500
-    var movieListPage: [MovieResponse] = []
+    var movieListPage: [MovieResponseDTO?] = []
     private var movieService: MovieListService
     
     func getPosterView(for posterPath: String) -> some View {
@@ -71,9 +71,9 @@ class MovieViewController: UIViewController {
                     print(self?.totalResponses ?? 0)
                     
                     // Process the movie results
-                    var listMoviesResponse: [MovieResponse] = []
+                    var listMoviesResponse: [MovieResponseDTO] = []
                     movies.results.forEach { movieFound in
-                        listMoviesResponse.append(movieFound)
+                        listMoviesResponse.append(movieFound ?? MovieResponseDTO.mock)
                     }
                     
                     self?.movieListPage = listMoviesResponse
@@ -137,7 +137,7 @@ extension MovieViewController : PageDelegate {
         print(page)
     }
     
-    func getMovieList() -> [MovieResponse] {
+    func getMovieList() -> [MovieResponseDTO?] {
         return movieListPage
     }
     
@@ -154,7 +154,7 @@ extension MovieViewController : PageDelegate {
 
 extension MovieViewController : MovieServiceDelegate {
     
-    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponse]) {
+    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?]) {
         
         
         DispatchQueue.main.async { [weak self] in
@@ -178,7 +178,7 @@ extension MovieViewController {
                 GridLayoutView(
                     onNext: { self.nextPage() },
                     onPrevious: { self.previousPage() },
-                    listOfMovies: movieListPage
+                    listOfMovies: movieListPage.toMovies
                     
                 )
                 .onAppear {
@@ -195,7 +195,7 @@ extension MovieViewController {
                 ContentView(
                     onNext: { self.nextPage() },
                     onPrevious: { self.previousPage() },
-                    listOfMovies: movieListPage
+                    listOfMovies: movieListPage.toMovies
                     
                 )
                 .onAppear {
