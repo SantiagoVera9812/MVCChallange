@@ -13,6 +13,7 @@ struct GridLayoutView: View {
     @State var inputText: String = ""
     @State private var listOfMovies: [Movie]
     weak var delegate: PageDelegate?
+    weak var movieChosenDelegate: MovieSelectedDelegate?
     
     
     init(listOfMovies: [Movie]) {
@@ -27,14 +28,14 @@ struct GridLayoutView: View {
             VStack {
                 
                 
-                NavigationView{
-                    ListHorizontalMovieViews(listOfMovies: listOfMovies){
+                    ListHorizontalMovieViews(listOfMovies: listOfMovies,  onMovieSelected: {
                         
                         movieID in
                         
                         
-                    }
-                }.navigationTitle("Movies")
+                    }, movieChosenDelegate: movieChosenDelegate)
+
+            
              
                
                 

@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var listOfMovies: [Movie]
     @State var inputText: String = ""
     weak var delegate: PageDelegate?
+    weak var movieChosenDelegate: MovieSelectedDelegate?
     
     
     init(listOfMovies: [Movie]) {
@@ -28,14 +29,13 @@ struct ContentView: View {
                 
                 TextLabelInput(inputText: $inputText, enterText: "Enter a movie")
                 
-                NavigationView{
-                    ListVerticallyMovieViews(listOfMovies: listOfMovies){
+                    ListVerticallyMovieViews(listOfMovies: listOfMovies,  onMovieSelected: {
                         
                         movieID in
                         
                         
-                    }
-                }.navigationTitle("Movies")
+                    }, movieChosenDelegate: movieChosenDelegate)
+                
                 
                 Spacer()
                 HStack {
@@ -59,16 +59,16 @@ struct ContentView: View {
 
 struct MoviewViewWrapper: View {
     var body: some View {
-        NavigationView {
+        
             UIViewControllerWrapper(
-                makeUIViewController: { MovieViewController()}
+                makeUIViewController: { MovieViewController.buildGridList()}
             )
             .navigationBarTitle("Login", displayMode: .inline)
             .navigationBarItems(trailing: Button("Settings") {
                 // Action for Help button
                 print("Help pressed")
             })
-        }
+        
     }
 }
 

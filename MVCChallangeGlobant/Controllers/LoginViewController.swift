@@ -37,7 +37,7 @@ class LoginViewController: UIViewController, LoginViewDelegate{
         if let navigationController = self.navigationController {
                 print("Navigation Controller found: \(navigationController.description)")
                 navigationController.navigationBar.topItem?.title = "Login"
-                
+               
             } else {
                 print("No navigation controller found.")
             }
@@ -60,7 +60,7 @@ class LoginViewController: UIViewController, LoginViewDelegate{
         }
         
         print("complete user made")
-        let movieViewController = MovieViewController()
+        let movieViewController = TabBarController.buildCars()
             self.navigationController?.pushViewController(movieViewController, animated: true)
         
     }

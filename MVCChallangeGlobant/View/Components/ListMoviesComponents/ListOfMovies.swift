@@ -8,10 +8,24 @@
 import Foundation
 import SwiftUI
 
+protocol MovieSelectedDelegate: AnyObject{
+    
+    func goToMovieDetails(id: Int)
+}
+
 struct ListVerticallyMovieViews: View {
     
     let listOfMovies: [Movie]
     let onMovieSelected: (Int) -> Void
+    weak var movieChosenDelegate: MovieSelectedDelegate?
+    
+    init(listOfMovies: [Movie], onMovieSelected: @escaping (Int) -> Void, movieChosenDelegate: MovieSelectedDelegate? = nil) {
+        self.listOfMovies = listOfMovies
+        self.onMovieSelected = onMovieSelected
+        self.movieChosenDelegate = movieChosenDelegate
+        
+    }
+    
     
     
     var body: some View {
@@ -21,16 +35,18 @@ struct ListVerticallyMovieViews: View {
             VStack {
                 
                     ForEach(listOfMovies, id: \.id) { movieFound in
-                        NavigationLink(destination: UIViewControllerWrapper {
-                            MovieDetailViewController(movieID: movieFound.id)
-                        }){
                             MovieListViewCell(
                                 movie: movieFound) { movieID in
                                     
+                                    movieChosenDelegate?.goToMovieDetails(id: movieID)
+                                    
                                     
                                 
+                                }.onTapGesture {
+                                    movieChosenDelegate?.goToMovieDetails(id: movieFound.id)
+                                
                                 }
-                        }
+                        
                         
                         Spacer(minLength: 20)
                         
@@ -48,6 +64,14 @@ struct ListHorizontalMovieViews: View {
     
     let listOfMovies: [Movie]
     let onMovieSelected: (Int) -> Void
+    weak var movieChosenDelegate: MovieSelectedDelegate?
+    
+    init(listOfMovies: [Movie], onMovieSelected: @escaping (Int) -> Void, movieChosenDelegate: MovieSelectedDelegate? = nil) {
+        self.listOfMovies = listOfMovies
+        self.onMovieSelected = onMovieSelected
+        self.movieChosenDelegate = movieChosenDelegate
+        
+    }
     
   // Define the number of columns for the grid
   let columns = [
@@ -60,22 +84,23 @@ struct ListHorizontalMovieViews: View {
         ForEach(listOfMovies, id: \.id) { movieFound in
           VStack {
               
-              NavigationLink(destination: UIViewControllerWrapper {
-                  MovieDetailViewController(movieID: movieFound.id)
-              }){
                   HorizontalMovieView(
                     
                     movie: movieFound
                   ) { movieID in
                       
                       print(movieID)
+                      movieChosenDelegate?.goToMovieDetails(id: movieID)
                       
+                  }.onTapGesture {
+                      
+                      movieChosenDelegate?.goToMovieDetails(id: movieFound.id)
                   }
                   
                   .aspectRatio(2/3, contentMode: .fill) // Fixed aspect ratio for the images
                   .cornerRadius(12) // Rounded corners for each movie poster
                   .shadow(radius: 6) // Add shadow for a sleek look
-              }
+              
           }
         }
       }

@@ -16,12 +16,6 @@ protocol MovieServiceDelegate{
     
 }
 
-struct MovieViewBuilder {
-    static func makeContentView() -> some View {
-        let movieViewController = MovieViewController()
-        return movieViewController.createContentView()
-    }
-}
 
 protocol PageDelegate: AnyObject {
     var page: Int { get set }
@@ -38,14 +32,21 @@ class MovieViewController: UIViewController {
     var totalResponses: Int = 500
     var movieListPage: [MovieResponseDTO?] = []
     private var movieService: MovieListService
+    private var viewType: ViewType
+        
+        enum ViewType {
+            case grid
+            case content
+        }
     
     func getPosterView(for posterPath: String) -> some View {
         return movieService.getAsyncImage(posterPath: posterPath)
     }
     
-    init(movieService: MovieListService = MovieListService()){
+    init(movieService: MovieListService = MovieListService(), viewType: ViewType){
         print("service made")
         self.movieService = movieService
+        self.viewType = viewType
         super.init(nibName: nil, bundle: nil)
         fetchMovieList()
         self.movieService.delegate = self
@@ -77,9 +78,14 @@ class MovieViewController: UIViewController {
     func updateMovieListPage(){
         
         HostingControllerBuilder.hostingControllerCreateView(in: self) {
-                    // Replace this with your actual SwiftUI view
-            self.createGridView()
+                // Ensure the closure returns a SwiftUI view
+                switch self.viewType {
+                case .grid:
+                    return AnyView( self.createGridView()) // Return the grid view
+                case .content:
+                    return AnyView(self.createContentView()) // Return the content view
                 }
+            }
         
     }
     
@@ -124,10 +130,19 @@ extension MovieViewController : MovieServiceDelegate {
         }
     }
     
-    
+}
 
+extension MovieViewController: MovieSelectedDelegate{
     
-
+    func goToMovieDetails(id: Int) {
+        
+        let hostingController = MovieDetailViewController(movieID: id)
+        let navigationController = UINavigationController(rootViewController: hostingController)
+        
+        self.navigationController?.pushViewController(hostingController, animated: true)
+    }
+    
+    
 }
 
 extension MovieViewController {
@@ -140,6 +155,7 @@ extension MovieViewController {
                 )
                         
         gridLayoutView.delegate = self
+        gridLayoutView.movieChosenDelegate = self
             
         
         return gridLayoutView
@@ -155,6 +171,7 @@ extension MovieViewController {
                 )
         
         contentView.delegate = self
+        contentView.movieChosenDelegate = self
         
         
         return contentView
@@ -163,6 +180,29 @@ extension MovieViewController {
         
     }
     
+}
+
+extension MovieViewController{
+    
+    class func buildSimpleList() -> MovieViewController {
+        
+        var movieController = MovieViewController(viewType: .content)
+        
+        movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
+        
+        return movieController
+        
+    }
+    
+    class func buildGridList() -> MovieViewController {
+        
+        var movieController = MovieViewController(viewType: .grid)
+        
+        movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
+        
+        return movieController
+        
+    }
 }
 
 extension MovieViewController {

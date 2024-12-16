@@ -48,3 +48,26 @@ struct NavigationBarTitle: NavigationBarStyle {
         viewController.navigationController?.navigationBar.tintColor = .black
     }
 }
+
+struct NavigationBarWithRightButton: NavigationBarStyle {
+    
+    private let title: String
+    private let rightButtonTitle: String
+    
+    init(title: String, rightButtonTitle: String) {
+        self.title = title
+        self.rightButtonTitle = rightButtonTitle
+    }
+    
+    func configure(_ viewController: UIViewController) {
+        viewController.title = self.title
+        viewController.navigationController?.isNavigationBarHidden = false
+        viewController.navigationController?.navigationBar.tintColor = .black
+        viewController.navigationItem.hidesBackButton = true
+        
+        // Create the right button
+        let rightButton = UIBarButtonItem(title: rightButtonTitle, style: .plain, target: self, action: nil)
+        viewController.navigationItem.rightBarButtonItem = rightButton
+    }
+    
+}

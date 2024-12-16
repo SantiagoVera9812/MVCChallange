@@ -39,13 +39,17 @@ struct MovieListViewCell: View{
                         .padding(.top, 5)
                     
                 }
+                .onTapGesture {
+                    onMovieSelected(movie.id)
+                }
                 .padding()
                 
             }
+            .onTapGesture {
+                onMovieSelected(movie.id)
+            }
         }
-        .onTapGesture {
-            onMovieSelected(movie.id)
-        }
+        
         .background(.ultraThinMaterial)
         .cornerRadius(12)
         .shadow(radius: 5)
@@ -76,6 +80,9 @@ struct HorizontalMovieView: View {
                     .font(.subheadline)
                     .foregroundColor(.gray)
                 
+            }
+            .onTapGesture {
+                onMovieSelected(movie.id)
             }
             .padding()
         }
