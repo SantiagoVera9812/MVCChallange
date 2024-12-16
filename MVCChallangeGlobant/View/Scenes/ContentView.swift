@@ -9,19 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     
-    typealias doSomething = () -> Void
     
-    private let onNext: doSomething
-    private let onPrevious: doSomething
-    
-
     @State private var listOfMovies: [Movie]
     @State var inputText: String = ""
+    weak var delegate: PageDelegate?
     
     
-    init(onNext: @escaping doSomething, onPrevious: @escaping doSomething, listOfMovies: [Movie]) {
-        self.onNext = onNext
-        self.onPrevious = onPrevious
+    init(listOfMovies: [Movie]) {
+        
         self.listOfMovies = listOfMovies
         
         
@@ -46,11 +41,11 @@ struct ContentView: View {
                 HStack {
                     
                     PreviousButton{
-                        onPrevious()
+                        delegate?.previousPage()
                     }
                     
                     NextButton {
-                        onNext()
+                        delegate?.nextPage()
                         
                     }
                 }

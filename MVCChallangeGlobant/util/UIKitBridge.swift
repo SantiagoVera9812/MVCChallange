@@ -34,7 +34,6 @@ class HostingControllerBuilder {
         createFunction: @escaping () -> Content
     ) {
         let hostingController = UIHostingController(rootView: createFunction())
-        let navigationController = UINavigationController(rootViewController: parent)
         
         parent.addChild(hostingController)
         parent.view.addSubview(hostingController.view)

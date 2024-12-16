@@ -78,7 +78,7 @@ class MovieViewController: UIViewController {
         
         HostingControllerBuilder.hostingControllerCreateView(in: self) {
                     // Replace this with your actual SwiftUI view
-            self.createContentView()
+            self.createGridView()
                 }
         
     }
@@ -134,34 +134,32 @@ extension MovieViewController {
     
     func createGridView() -> some View {
         
-            return AnyView(
-                GridLayoutView(
-                    onNext: { self.nextPage() },
-                    onPrevious: { self.previousPage() },
+            var gridLayoutView =
+               GridLayoutView(
                     listOfMovies: movieListPage.toMovies
-                    
                 )
-                .onAppear {
-                    
-                }
-            )
+                        
+        gridLayoutView.delegate = self
+            
+        
+        return gridLayoutView
         
     }
     
     
     func createContentView() -> some View {
         
-            return AnyView(
+            var contentView =
                 ContentView(
-                    onNext: { self.nextPage() },
-                    onPrevious: { self.previousPage() },
                     listOfMovies: movieListPage.toMovies
-                    
                 )
-                .onAppear {
-                    
-                }
-            )
+        
+        contentView.delegate = self
+        
+        
+        return contentView
+                
+            
         
     }
     

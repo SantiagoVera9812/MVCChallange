@@ -11,6 +11,8 @@ import SwiftUI
 
 class LoginViewController: UIViewController, LoginViewDelegate{
     
+    
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -25,6 +27,8 @@ class LoginViewController: UIViewController, LoginViewDelegate{
         
         
         
+        
+        
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -33,7 +37,7 @@ class LoginViewController: UIViewController, LoginViewDelegate{
         if let navigationController = self.navigationController {
                 print("Navigation Controller found: \(navigationController.description)")
                 navigationController.navigationBar.topItem?.title = "Login"
-                navigationController.navigationBar.topItem?.rightBarButtonItems = [UIBarButtonItem(title: "Help", style: .plain, target: nil, action: nil)]
+                
             } else {
                 print("No navigation controller found.")
             }
@@ -86,17 +90,4 @@ extension LoginViewController {
         }
 }
 
-class ContainerViewController: UIViewController {
-    override func viewDidLoad() {
-        super.viewDidLoad()
 
-        // Create your LoginViewController
-        let loginViewController = LoginViewController()
-        
-        // Wrap it in a UINavigationController
-        let navigationController = UINavigationController(rootViewController: loginViewController)
-        
-        // Present the navigation controller
-        self.present(navigationController, animated: true, completion: nil)
-    }
-}
