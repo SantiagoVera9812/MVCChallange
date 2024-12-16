@@ -13,38 +13,20 @@ struct MVCChallangeGlobantApp: App {
         WindowGroup {
             
         
-                            ViewControllerWrapper()
+            UIViewControllerWrapper{
+                let loginViewController = LoginViewController()
+                let navigationController = UINavigationController(rootViewController: loginViewController)
+                
+                return navigationController
+                                                                
+                                                                      
+            }
         }
     }
 }
 
-struct ViewControllerWrapper: UIViewControllerRepresentable {
-    
-    func makeUIViewController(context: Context) -> MovieViewController {
-        let movie = MovieViewController()
-        
-                return movie
-    }
-    
-    func updateUIViewController(_ uiViewController: MovieViewController, context: Context) {
-        // Update the view controller if needed
-    }
-}
+// Generic UIViewController Wrapper
 
-struct DetailsControllerWrapper: UIViewControllerRepresentable {
-    
-    let movieId: Int
-    
-    func makeUIViewController(context: Context) -> MovieDetailViewController {
-        let movie = MovieDetailViewController(movieID: movieId)
-        
-                return movie
-    }
-    
-    func updateUIViewController(_ uiViewController: MovieDetailViewController , context: Context) {
-        // Update the view controller if needed
-    }
-    
-    
-    
-}
+
+
+

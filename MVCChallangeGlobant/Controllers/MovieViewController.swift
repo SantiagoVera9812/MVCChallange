@@ -44,6 +44,7 @@ class MovieViewController: UIViewController {
     }
     
     init(movieService: MovieListService = MovieListService()){
+        print("service made")
         self.movieService = movieService
         super.init(nibName: nil, bundle: nil)
         fetchMovieList()
@@ -56,74 +57,33 @@ class MovieViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        if let navigationController = self.navigationController {
+                print("Navigation Controller found: \(navigationController.description)")
+                
+            } else {
+                print("No navigation controller found.")
+            }
+    }
+    
     override func viewDidLoad() {
             super.viewDidLoad()
         
         }
-    
-    func fetchMovieList(language: String = "en") {
-        
-        movieService.getMoviesList(page: page, language: language) { [weak self] movieListResponse in
-            
-            
-                if let movies = movieListResponse {
-                    
-                    print(self?.totalResponses ?? 0)
-                    
-                    // Process the movie results
-                    var listMoviesResponse: [MovieResponseDTO] = []
-                    movies.results.forEach { movieFound in
-                        listMoviesResponse.append(movieFound ?? MovieResponseDTO.mock)
-                    }
-                    
-                    self?.movieListPage = listMoviesResponse
-                    
-                } else {
-                    
-                    print("error")
-                }
-                
-            
-        }
-    }
-    
-    //Esta funcion se llamara cuando se termine la
+
+    //Esta funcion se llamara cuando se termine el llamado a la api
     
     func updateMovieListPage(){
         
-        print(movieListPage)
-        print(totalResponses)
-        
-        //Desde aqui es posible cambiar de la lista en horizontal (createContentView a la lista en vertical gridContentView
-        let hostingController = UIHostingController(rootView: createContentView())
-        
-        
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        
-        
-        hostingController.view.frame = view.bounds
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        
-        hostingController.didMove(toParent: self)
+        HostingControllerBuilder.hostingControllerCreateView(in: self) {
+                    // Replace this with your actual SwiftUI view
+            self.createContentView()
+                }
         
     }
     
-   /* func fetchMovieDetailsList(idMovie: Int, language: String) {
-        movieService.getMovieDetails(idMovie: idMovie, language: language) { [weak self] movieListResponse in
-            
-            DispatchQueue.main.async {
-                if let movies = movieListResponse {
-                    print(movies.genres)
-                } else {
-                    print("error")
-                }
-            }
-        }
-    } */
-    
-    
+   
 }
 
 extension MovieViewController : PageDelegate {
@@ -214,6 +174,37 @@ extension MovieViewController {
             movieDetailVC.movieID = movieID // Set the selected movie ID
             self.navigationController?.pushViewController(movieDetailVC, animated: true) // Navigate to the movie detail view controller
         }
+}
+
+extension MovieViewController{
+    
+    func fetchMovieList(language: String = "en") {
+        
+        movieService.getMoviesList(page: page, language: language) { [weak self] movieListResponse in
+            
+            
+                if let movies = movieListResponse {
+                    
+                    print(self?.totalResponses ?? 0)
+                    
+                    // Process the movie results
+                    var listMoviesResponse: [MovieResponseDTO] = []
+                    movies.results.forEach { movieFound in
+                        listMoviesResponse.append(movieFound ?? MovieResponseDTO.mock)
+                    }
+                    
+                    self?.movieListPage = listMoviesResponse
+                    
+                } else {
+                    
+                    print("error")
+                }
+                
+            
+        }
+    }
+    
+    
 }
 
 class ImageLoader: ObservableObject {

@@ -62,8 +62,23 @@ struct ContentView: View {
     
 }
 
+struct MoviewViewWrapper: View {
+    var body: some View {
+        NavigationView {
+            UIViewControllerWrapper(
+                makeUIViewController: { MovieViewController()}
+            )
+            .navigationBarTitle("Login", displayMode: .inline)
+            .navigationBarItems(trailing: Button("Settings") {
+                // Action for Help button
+                print("Help pressed")
+            })
+        }
+    }
+}
+
 #Preview {
     
-    ViewControllerWrapper()
+        MoviewViewWrapper()
     
 }

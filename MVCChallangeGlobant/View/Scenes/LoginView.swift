@@ -8,6 +8,7 @@
 import SwiftUI
 
 protocol LoginViewDelegate: AnyObject {
+    func loginViewLogin(_ view: LoginView, didSignInWith user: String?, andPassword password: String?)
     func loginViewSignUp(_ view: LoginView)
     func loginViewRecoverPassword(_ view: LoginView)
 }
@@ -49,16 +50,12 @@ struct LoginView: View {
                     .cornerRadius(8)
             }
             
-            Button(action: {
-                delegate?.loginViewSignUp(self)
-            }) {
+            Button(action: doSignUp) {
                 Text("Regístrate aquí")
                     .foregroundColor(.blue)
             }
             
-            Button(action: {
-                delegate?.loginViewRecoverPassword(self)
-            }) {
+            Button(action: doRecoverPassword) {
                 HStack {
                     Image(systemName: "square.and.arrow.up")
                     Text("¿Olvidaste tu contraseña?")
@@ -85,13 +82,31 @@ struct LoginView: View {
         }
     }
     
+    private func doRecoverPassword(){
+        delegate?.loginViewRecoverPassword(self)
+    }
+    
+    private func doSignUp(){
+        delegate?.loginViewSignUp(self)
+    }
+    
     private func doSignIn() {
-        // Implement sign-in logic here
+        
+        delegate?.loginViewLogin(self, didSignInWith: email, andPassword: password)
     }
 }
 
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
+
+
+#Preview {
+    
+    UIViewControllerWrapper{
+        let loginViewController = LoginViewController()
+        let navigationController = UINavigationController(rootViewController: loginViewController)
+        
+        return navigationController
+                                                        
+                                                              
     }
+    
 }

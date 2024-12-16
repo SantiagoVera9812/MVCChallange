@@ -21,7 +21,9 @@ struct ListVerticallyMovieViews: View {
             VStack {
                 
                     ForEach(listOfMovies, id: \.id) { movieFound in
-                        NavigationLink(destination: DetailsControllerWrapper(movieId: movieFound.id ?? 1)){
+                        NavigationLink(destination: UIViewControllerWrapper {
+                            MovieDetailViewController(movieID: movieFound.id)
+                        }){
                             MovieListViewCell(
                                 movie: movieFound) { movieID in
                                     
@@ -58,7 +60,9 @@ struct ListHorizontalMovieViews: View {
         ForEach(listOfMovies, id: \.id) { movieFound in
           VStack {
               
-              NavigationLink(destination: DetailsControllerWrapper(movieId: movieFound.id)){
+              NavigationLink(destination: UIViewControllerWrapper {
+                  MovieDetailViewController(movieID: movieFound.id)
+              }){
                   HorizontalMovieView(
                     
                     movie: movieFound

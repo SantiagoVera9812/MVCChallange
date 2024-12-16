@@ -68,18 +68,10 @@ extension MovieDetailViewController: MovieDetailsServiceDelegate {
         print("update movie List")
                 
         
-        let hostingController = UIHostingController(rootView: createMovieDetails())
-        
-        
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        
-        
-        hostingController.view.frame = view.bounds
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
-        
-        hostingController.didMove(toParent: self)
+        HostingControllerBuilder.hostingControllerCreateView(in: self) {
+                    // Replace this with your actual SwiftUI view
+            self.createMovieDetails()
+                }
     }
     
 }

@@ -66,7 +66,9 @@ struct GridLayoutView: View {
 
 #Preview {
     
-    ViewControllerWrapper()
+    UIViewControllerWrapper{
+        MovieViewController()
+    }
         
     
 }
