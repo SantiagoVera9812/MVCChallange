@@ -33,7 +33,7 @@ class TabBarController: UITabBarController {
 extension TabBarController {
     
     class func buildCars() -> TabBarController {
-        let controllers = [MovieViewController.buildSimpleList(), YourViewController().movieGridViewController]
+        let controllers = [MovieViewController.buildSimpleList(), MovieGridViewController.buildGridList()]
         let navStyle = NavigationBarWithRightButton(title: "Movies", rightButtonTitle: "Settings")
         let controller = TabBarController(controllers: controllers, navigationStyle: navStyle)
         return controller

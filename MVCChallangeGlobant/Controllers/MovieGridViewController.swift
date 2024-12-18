@@ -48,9 +48,12 @@ class MovieGridViewController: UIViewController {
                 if let newMovies = newValue as? [Movie] {
                     print("changing to new movies")
                     movieListPage = newMovies
+                    updateMovieListPage()
                 } else {
                     
                     print("Error: Unable to cast to [Movie]")
+                    fetchMovieList()
+                    updateMovieListPage()
                 }
             }
         }
@@ -234,7 +237,7 @@ extension MovieGridViewController{
         
         let movieController = MovieGridViewController(viewType: .grid)
         
-        movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
+        movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
         
         return movieController
         
