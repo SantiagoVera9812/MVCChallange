@@ -1,34 +1,66 @@
 //
-//  MovieViewController.swift
+//  MovieGridViewController.swift
 //  MVCChallangeGlobant
 //
-//  Created by Christian Santiago Vera Rojas on 28/11/24.
+//  Created by Christian Santiago Vera Rojas on 18/12/24.
 //
 
 import Foundation
-import SwiftUI
 import UIKit
-import Combine
+import SwiftUI
 
-protocol MovieServiceProtocol{
+
+protocol CarSearchDelegate: AnyObject{
     
-    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?])
+    typealias DidFilterHandler = (_ result: [Any]) -> Void
+    var dataSource: [Any] {get set}
+    var didFilterHandler: DidFilterHandler? {get set}
+    func filterMovies(searchText: String)
     
 }
 
-protocol PageDelegate: AnyObject {
-    var page: Int { get set }
-    var totalResponses: Int { get set }
+extension MovieGridViewController: CarSearchDelegate {
     
-    func nextPage()
-    func previousPage()
+    func filterMovies(searchText: String) {
+        
+        var result: [Any] = self.movieListPage.filter({$0.title.localizedCaseInsensitiveContains(searchText)})
+        result = !result.isEmpty ? result :
+        ["No se encontraron resultados"]
+        
+        self.dataSource = result
+        
+        didFilterHandler?(result)
+        
+        print(movieListPage)
+        
+        }
+    
 }
 
-class MovieViewController: UIViewController {
+class MovieGridViewController: UIViewController {
+    
+    var dataSource: [Any] {
+            get {
+                return movieListPage.map { $0 as Any }
+            }
+            set {
+                
+                if let newMovies = newValue as? [Movie] {
+                    print("changing to new movies")
+                    movieListPage = newMovies
+                } else {
+                    
+                    print("Error: Unable to cast to [Movie]")
+                }
+            }
+        }
+    
+    var didFilterHandler: DidFilterHandler? 
     
     var page: Int = 1
+    
     var totalResponses: Int = 500
-    var movieListPage: [MovieResponseDTO?] = []
+    var movieListPage: [Movie] = []
     private var movieService: MovieListService
     private var viewType: ViewType
         
@@ -42,7 +74,7 @@ class MovieViewController: UIViewController {
     }
     
     init(movieService: MovieListService = MovieListService(), viewType: ViewType){
-       
+        print("on movie grid controller")
         self.movieService = movieService
         self.viewType = viewType
         super.init(nibName: nil, bundle: nil)
@@ -90,7 +122,7 @@ class MovieViewController: UIViewController {
    
 }
 
-extension MovieViewController : PageDelegate {
+extension MovieGridViewController : PageDelegate {
     
     func nextPage() {
         if page < totalResponses {
@@ -99,6 +131,10 @@ extension MovieViewController : PageDelegate {
             
         }
         print(page)
+    }
+    
+    func getMovieList() -> [Movie] {
+        return movieListPage
     }
     
     func previousPage() {
@@ -112,13 +148,13 @@ extension MovieViewController : PageDelegate {
     
 }
 
-extension MovieViewController : MovieServiceProtocol {
+extension MovieGridViewController : MovieServiceProtocol {
     
     func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?]) {
         
         
         DispatchQueue.main.async { [weak self] in
-            self?.movieListPage = movieList
+            self?.movieListPage = movieList.toMovies
             self?.totalResponses = movieTotalResponse
             self?.updateMovieListPage()
         }
@@ -126,7 +162,7 @@ extension MovieViewController : MovieServiceProtocol {
     
 }
 
-extension MovieViewController: MovieSelectedDelegate{
+extension MovieGridViewController: MovieSelectedDelegate{
     
     func goToMovieDetails(id: Int) {
         
@@ -138,18 +174,21 @@ extension MovieViewController: MovieSelectedDelegate{
     
 }
 
-extension MovieViewController {
+extension MovieGridViewController {
     
     func createGridView() -> some View {
         
+        let movies: [Movie] = movieListPage
+        
             var gridLayoutView =
                GridLayoutView(
-                    listOfMovies: movieListPage.toMovies
+                listOfMovies: movies
                     //textLabelInput: TextLabelInput(inputText: <#T##Binding<String>#>, enterText: <#T##String#>)
                 )
                         
         gridLayoutView.delegate = self
         gridLayoutView.movieChosenDelegate = self
+        gridLayoutView.searchLabelDelegate = self
             
         
         return gridLayoutView
@@ -159,13 +198,16 @@ extension MovieViewController {
     
     func createContentView() -> some View {
         
+        let movies: [Movie] = movieListPage
+        
             var contentView =
                 ContentView(
-                    listOfMovies: movieListPage.toMovies
+                    listOfMovies: movies
                 )
         
         contentView.delegate = self
         contentView.movieChosenDelegate = self
+        
         
         
         return contentView
@@ -176,11 +218,11 @@ extension MovieViewController {
     
 }
 
-extension MovieViewController{
+extension MovieGridViewController{
     
-    class func buildSimpleList() -> MovieViewController {
+    class func buildSimpleList() -> MovieGridViewController {
         
-        let movieController = MovieViewController(viewType: .content)
+        let movieController = MovieGridViewController(viewType: .content)
         
         movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
         
@@ -188,27 +230,18 @@ extension MovieViewController{
         
     }
     
-    class func buildGridList() -> MovieViewController {
+    class func buildGridList() -> MovieGridViewController {
         
-        let movieController = MovieViewController(viewType: .grid)
+        let movieController = MovieGridViewController(viewType: .grid)
         
-        movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
+        movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
         
         return movieController
         
     }
 }
 
-extension MovieViewController {
-    
-    func navigateToMovieDetail(movieID: Int) {
-        let movieDetailVC = MovieDetailViewController(movieID: movieID)
-            movieDetailVC.movieID = movieID // Set the selected movie ID
-            self.navigationController?.pushViewController(movieDetailVC, animated: true) // Navigate to the movie detail view controller
-        }
-}
-
-extension MovieViewController{
+extension MovieGridViewController{
     
     func fetchMovieList(language: String = "en") {
         
@@ -219,13 +252,7 @@ extension MovieViewController{
                     
                     print(self?.totalResponses ?? 0)
                     
-                    // Process the movie results
-                    var listMoviesResponse: [MovieResponseDTO] = []
-                    movies.results.forEach { movieFound in
-                        listMoviesResponse.append(movieFound ?? MovieResponseDTO.mock)
-                    }
-                    
-                    self?.movieListPage = listMoviesResponse
+                    self?.movieListPage = movies.results.toMovies
                     
                 } else {
                     
@@ -238,24 +265,4 @@ extension MovieViewController{
     
     
 }
-
-class ImageLoader: ObservableObject {
-    @Published var image: UIImage? = nil
-    var cancellable: AnyCancellable?
-    
-    func loadImage(from url: URL) {
-        cancellable = URLSession.shared.dataTaskPublisher(for: url)
-            .map { $0.data }
-            .tryMap { data -> UIImage? in
-                guard let image = UIImage(data: data) else {
-                    throw URLError(.badURL) 
-                }
-                return image
-            }
-            .replaceError(with: nil)
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.image, on: self)
-    }
-}
-
 

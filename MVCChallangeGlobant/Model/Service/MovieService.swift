@@ -59,7 +59,7 @@ extension BaseMovieService {
 
 class MovieListService: BaseMovieService {
     
-    var delegate: MovieServiceDelegate?
+    var delegate: MovieServiceProtocol?
     
     func getMoviesList(page: Int, language: String, completion: @escaping (MovieListResponseDTO?) -> Void){
         

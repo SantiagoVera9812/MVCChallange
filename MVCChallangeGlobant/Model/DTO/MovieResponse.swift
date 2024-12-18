@@ -32,7 +32,13 @@ extension MovieResponseDTO{
 }
 
 extension Array where Element == MovieResponseDTO?{
-    var toMovies: [Movie] {
-        self.map({ Movie(dto: $0 ?? MovieResponseDTO.mock) })
-    }
+    
+        var toMovies: [Movie] {
+            get {
+                self.map { Movie(dto: $0 ?? MovieResponseDTO.mock) }
+            }
+            set {
+                self.toMovies = newValue
+            }
+        }
 }
