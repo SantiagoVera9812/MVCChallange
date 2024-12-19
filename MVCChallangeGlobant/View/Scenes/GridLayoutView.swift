@@ -26,19 +26,15 @@ struct GridLayoutView: View {
     
     var body: some View {
         
-            TextLabelInput(inputText: $inputText, enterText: "Enter movie")
+      /*      TextLabelInput(inputText: $inputText, enterText: "Enter movie")
                 .onChange(of: inputText) { oldState, newState in
                     
-                    
-                    /*var result: [Any] = self.listOfMovies.filter({$0.title.localizedCaseInsensitiveContains(newState)})
-                    result = !result.isEmpty ? result :
-                    ["No se encontraron resultados"]*/
                     searchLabelDelegate?.filterMovies(searchText: newState)
                     
                     
                 
                     
-                }
+                } */
             
             
             VStack {

@@ -37,8 +37,6 @@ extension Array where Element == MovieResponseDTO?{
             get {
                 self.map { Movie(dto: $0 ?? MovieResponseDTO.mock) }
             }
-            set {
-                self.toMovies = newValue
-            }
+            
         }
 }

@@ -17,7 +17,7 @@ protocol MovieDetailsServiceDelegate{
 protocol DetailFetchDelegate: AnyObject{
     
     var movieID: Int {get set}
-    var movieDetails: MovieDetailsResponseDTO? { get set}
+    var movieDetails: MovieDetailsResponseDTO? { get set }
     
     func fetchMovieDetailsList(idMovie: Int, language: String)
 }
