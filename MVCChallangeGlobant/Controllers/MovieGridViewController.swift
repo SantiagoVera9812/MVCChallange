@@ -132,13 +132,13 @@ extension MovieGridViewController: MovieSelectedDelegate{
 
 extension MovieGridViewController: movieUpdatedFromSearchBardelegate {
     
-    func updateMovieListFromSearchbar(listOfMovies: [Movie]){
+    func updateMovieListFromSearchbar(listOfMovies: [Movie], inputText: String = ""){
         
         HostingControllerBuilder.hostingControllerCreateView(in: self) {
                 // Ensure the closure returns a SwiftUI view
                 switch self.viewType {
                 case .grid:
-                    return AnyView( self.updateGridView(listOfMovies: listOfMovies)) // Return the grid view
+                    return AnyView( self.updateGridView(listOfMovies: listOfMovies, inputText: inputText)) // Return the grid view
                 case .content:
                     return AnyView(self.createContentView()) // Return the content view
                 }
@@ -148,9 +148,8 @@ extension MovieGridViewController: movieUpdatedFromSearchBardelegate {
 
 extension MovieGridViewController {
     
-    func createSearchbarView() -> some View {
-        var searchView = SearchView(movieListPage: movieListPage, movieViewController: self)
-        searchView.updateDelegat = self
+    func createSearchbarView(inputText: String = "") -> some View {
+        var searchView = SearchView(movieListPage: movieListPage, updateDelegate: self, inputText: inputText)
         return searchView
         }
     
@@ -173,9 +172,9 @@ extension MovieGridViewController {
 
 extension MovieGridViewController {
     
-    func updateGridView(listOfMovies: [Movie]) -> some View {
+    func updateGridView(listOfMovies: [Movie], inputText: String) -> some View {
 
-        let searchView = createSearchbarView()
+        let searchView = createSearchbarView(inputText: inputText)
             
             // Create the grid layout view
         var gridLayoutView = GridLayoutView(listOfMovies: listOfMovies)

@@ -9,13 +9,16 @@ import SwiftUI
 
 protocol movieUpdatedFromSearchBardelegate: AnyObject{
     
-    func updateMovieListFromSearchbar(listOfMovies: [Movie])
+    func updateMovieListFromSearchbar(listOfMovies: [Movie], inputText: String)
 }
 
 class SearchViewModel: ObservableObject, CarSearchDelegate {
     
+    weak var updateDelegat: movieUpdatedFromSearchBardelegate?
+    
     func updateMovieListPage() {
         print("On Update")
+        updateDelegat?.updateMovieListFromSearchbar(listOfMovies: movieListPage, inputText: "")
     }
     
     
@@ -23,10 +26,11 @@ class SearchViewModel: ObservableObject, CarSearchDelegate {
     @Published var initialPage: [Movie] = []
     private var movieService: MovieListService
     
-    init(movieService: MovieListService = MovieListService(),movieListPage: [Movie] = []) {
+    init(movieService: MovieListService = MovieListService(),movieListPage: [Movie] = [], updateDelegate: movieUpdatedFromSearchBardelegate? = nil) {
         self.movieService = movieService
             self.movieListPage = movieListPage
         self.initialPage = movieListPage
+        self.updateDelegat = updateDelegate
         
         }
     
@@ -77,13 +81,11 @@ class SearchViewModel: ObservableObject, CarSearchDelegate {
 struct SearchView: View {
     
     @StateObject var viewModel = SearchViewModel() // Initialize the ViewModel
-    @State private var inputText: String = ""
-   
-    weak var updateDelegat: movieUpdatedFromSearchBardelegate?
-    
-    init(movieListPage: [Movie], movieViewController: UIViewController) {
-            _viewModel = StateObject(wrappedValue: SearchViewModel(movieListPage: movieListPage))
-        
+    @State private var inputText: String
+       
+    init(movieListPage: [Movie], updateDelegate: movieUpdatedFromSearchBardelegate?, inputText: String = "") {
+        _viewModel = StateObject(wrappedValue: SearchViewModel(movieListPage: movieListPage, updateDelegate: updateDelegate))
+        self.inputText = inputText
         }
     
     var body: some View {
@@ -116,5 +118,5 @@ struct SearchTextLabel: View {
 }
 
 #Preview {
-    SearchView(movieListPage: [], movieViewController: MovieViewController(viewType: .grid))
+    SearchView(movieListPage: [], updateDelegate: MovieGridViewController(viewType: .grid))
 }
