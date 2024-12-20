@@ -136,5 +136,5 @@ struct SearchTextLabel: View {
 }
 
 #Preview {
-    SearchView(movieListPage: [], updateDelegate: MovieGridViewController(viewType: .grid))
+    SearchView(movieListPage: [], updateDelegate: MovieSearchViewController(viewType: .grid))
 }
