@@ -25,6 +25,11 @@ protocol DetailFetchDelegate: AnyObject{
 class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     
     var movieID: Int
+    var isFavorite: Bool = false {
+            didSet {
+                configureNavigationBar()
+            }
+        }
         
     var movieDetails: MovieDetailsResponseDTO? = nil
     
@@ -47,6 +52,26 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    override func viewDidLoad() {
+            super.viewDidLoad()
+            configureNavigationBar()
+        }
+        
+    func configureNavigationBar() {
+        
+        
+        let rightButton = UIBarButtonItem(image: isFavorite ? UIImage(systemName: "star.fill") : UIImage(systemName: "star"), style: .plain, target: self, action: #selector(rightButtonTapped))
+            self.navigationItem.rightBarButtonItem = rightButton
+        }
+    
+    @objc func rightButtonTapped() {
+        
+        print("star buttom pressed")
+            
+        isFavorite.toggle()
+        
+        }
     
 
 }
@@ -85,6 +110,24 @@ extension MovieDetailViewController{
             )
         
     }
+    
+}
+
+extension MovieDetailViewController {
+    
+    class func buildMovieDetails(movieId: Int) -> MovieDetailViewController {
+        
+        let movieDetailController = MovieDetailViewController(movieID: movieId)
+        
+        let navBarStyle = NavigationBarWithRightButton(title: "Movie Details", rightButtonTitle: "star")
+        
+        navBarStyle.configure(movieDetailController)
+        
+        return movieDetailController
+        
+    }
+    
+    
     
 }
 

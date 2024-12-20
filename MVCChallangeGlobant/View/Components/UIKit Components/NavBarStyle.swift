@@ -60,14 +60,39 @@ struct NavigationBarWithRightButton: NavigationBarStyle {
     }
     
     func configure(_ viewController: UIViewController) {
+        
+        
         viewController.title = self.title
         viewController.navigationController?.isNavigationBarHidden = false
         viewController.navigationController?.navigationBar.tintColor = .black
         viewController.navigationItem.hidesBackButton = true
+        
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        viewController.navigationItem.backBarButtonItem = backButton
         
         // Create the right button
         let rightButton = UIBarButtonItem(title: rightButtonTitle, style: .plain, target: self, action: nil)
         viewController.navigationItem.rightBarButtonItem = rightButton
     }
     
+}
+
+struct NavigationBarWithImageAsAButton: NavigationBarStyle {
+    
+    let title: String
+    var rightButtonImage: UIImage?
+
+    func configure(_ viewController: UIViewController) {
+        
+        viewController.navigationItem.title = title
+        
+        if let image = rightButtonImage {
+            let rightButton = UIBarButtonItem(image: image, style: .plain, target: nil, action: nil)
+            viewController.navigationItem.rightBarButtonItem = rightButton
+        }
+        
+        let backButton = UIBarButtonItem(title: "", style: .plain, target: nil, action: nil)
+        viewController.navigationItem.backBarButtonItem = backButton
+        
+    }
 }

@@ -11,24 +11,21 @@ import SwiftUI
 
 class LoginViewController: UIViewController, LoginViewDelegate{
     
-    
+    let registerService: enterAppDelegate
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init() {
+    init(registerService: enterAppDelegate = CoreDataService()) {
         
+        self.registerService = registerService
         super.init(nibName: nil, bundle: nil)
         HostingControllerBuilder.hostingControllerCreateView(in: self) {
                     // Replace this with your actual SwiftUI view
             self.createLoginView()
                 }
-        
-        
-        
-        
-        
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -59,7 +56,9 @@ class LoginViewController: UIViewController, LoginViewDelegate{
             return
         }
         
-        print("complete user made")
+        
+        guard registerService.loginUser(email: user, password: password) != nil else {return self.showErrorAlertWithMessage("Uusario no encontrado")}
+        
         let movieViewController = TabBarController.buildCars()
             self.navigationController?.pushViewController(movieViewController, animated: true)
         
@@ -68,7 +67,14 @@ class LoginViewController: UIViewController, LoginViewDelegate{
     
     
     func loginViewSignUp(_ view: LoginView) {
-        print("sign up pressed")
+        
+        let registerController = RegisterController()
+        
+        let navBarStyle = NavigationBarTitle(title: "Register")
+        
+        navBarStyle.configure(registerController)
+        
+        self.navigationController?.pushViewController(registerController, animated: true)
     }
     
     func loginViewRecoverPassword(_ view: LoginView) {

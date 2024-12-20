@@ -65,9 +65,9 @@ class MovieSearchViewController: UIViewController {
                 // Ensure the closure returns a SwiftUI view
                 switch self.viewType {
                 case .grid:
-                    return AnyView( self.createGridView()) // Return the grid view
+                    return AnyView( self.updateGridView(listOfMovies: self.movieListPage, inputText: "")) // Return the grid view
                 case .content:
-                    return AnyView(self.createContentView()) // Return the content view
+                    return AnyView(self.updateSimpleView(listOfMovies: self.movieListPage, inputText: "")) // Return the content view
                 }
             }
         
@@ -123,6 +123,10 @@ extension MovieSearchViewController: MovieSelectedDelegate{
     func goToMovieDetails(id: Int) {
         
         let hostingController = MovieDetailViewController(movieID: id)
+        
+        let navBarStyle = NavigationBarWithImageAsAButton(title: "Movie Details", rightButtonImage: UIImage(systemName: "star"))
+        
+        navBarStyle.configure(hostingController)
     
         self.navigationController?.pushViewController(hostingController, animated: true)
     }
@@ -232,53 +236,7 @@ extension MovieSearchViewController {
                 simpleLayoutView // Display the grid layout view
             })
         }
-    
-    
-    
-    
-    
-        func createGridView() -> some View {
-                let movies: [Movie] = movieListPage
-                
-                // Create the search view
-            let searchView = createSearchbarView()
-                
-                // Create the grid layout view
-                var gridLayoutView = GridLayoutView(listOfMovies: movies)
-                gridLayoutView.delegate = self
-                gridLayoutView.movieChosenDelegate = self
-                
-                // Combine the search view and grid layout view
-                return AnyView(VStack {
-                    searchView // Display the search view
-                    gridLayoutView // Display the grid layout view
-                })
-            }
-        
-    
-    
-    
-    func createContentView() -> some View {
-        
-        let movies: [Movie] = movieListPage
-        
-        let searchView = createSearchbarView()
-        
-        // Create the grid layout view
-        var gridLayoutView = ContentView(listOfMovies: movies)
-        gridLayoutView.delegate = self
-        gridLayoutView.movieChosenDelegate = self
-        
-        // Combine the search view and grid layout view
-        return AnyView(VStack {
-            searchView // Display the search view
-            gridLayoutView // Display the grid layout view
-        })
-                
-            
-        
-    }
-    
+
 }
 
 extension MovieSearchViewController{
