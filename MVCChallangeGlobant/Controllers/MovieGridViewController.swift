@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 import SwiftUI
 
-class MovieGridViewController: UIViewController {
+class MovieSearchViewController: UIViewController {
     
     var page: Int = 1
     
@@ -78,7 +78,7 @@ class MovieGridViewController: UIViewController {
    
 }
 
-extension MovieGridViewController : PageDelegate {
+extension MovieSearchViewController : PageDelegate {
     
     func nextPage() {
         if page < totalResponses {
@@ -104,7 +104,7 @@ extension MovieGridViewController : PageDelegate {
     
 }
 
-extension MovieGridViewController : MovieServiceProtocol {
+extension MovieSearchViewController : MovieServiceProtocol {
     
     func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?]) {
         
@@ -118,7 +118,7 @@ extension MovieGridViewController : MovieServiceProtocol {
     
 }
 
-extension MovieGridViewController: MovieSelectedDelegate{
+extension MovieSearchViewController: MovieSelectedDelegate{
     
     func goToMovieDetails(id: Int) {
         
@@ -130,7 +130,32 @@ extension MovieGridViewController: MovieSelectedDelegate{
     
 }
 
-extension MovieGridViewController: movieUpdatedFromSearchBardelegate {
+extension MovieSearchViewController: movieUpdatedFromSearchBardelegate {
+    
+    
+    func wrongSearchBar(inputText: String) {
+        
+        HostingControllerBuilder.hostingControllerCreateView(in: self) {
+                // Ensure the closure returns a SwiftUI view
+            
+            let searchbar = self.createSearchbarView(inputText: inputText)
+                
+            return AnyView(
+                
+                VStack{
+                    
+                    searchbar
+                    WarningNoMoviesVie(errorMsg: "No movies found with search: " + inputText)
+                    
+                }
+            
+            
+            ) // Return the grid view
+                
+                }
+        
+    }
+    
     
     func updateMovieListFromSearchbar(listOfMovies: [Movie], inputText: String = ""){
         
@@ -140,22 +165,22 @@ extension MovieGridViewController: movieUpdatedFromSearchBardelegate {
                 case .grid:
                     return AnyView( self.updateGridView(listOfMovies: listOfMovies, inputText: inputText)) // Return the grid view
                 case .content:
-                    return AnyView(self.createContentView()) // Return the content view
+                    return AnyView(self.updateSimpleView(listOfMovies: listOfMovies, inputText: inputText)) // Return the content view
                 }
             }
     }
 }
 
-extension MovieGridViewController {
+extension MovieSearchViewController {
     
     func createSearchbarView(inputText: String = "") -> some View {
-        var searchView = SearchView(movieListPage: movieListPage, updateDelegate: self, inputText: inputText)
+        let searchView = SearchView(movieListPage: movieListPage, updateDelegate: self, inputText: inputText)
         return searchView
         }
     
 }
 
-extension MovieGridViewController {
+extension MovieSearchViewController {
     
     func searchBarController(){
         
@@ -170,7 +195,8 @@ extension MovieGridViewController {
     }
 
 
-extension MovieGridViewController {
+extension MovieSearchViewController {
+    
     
     func updateGridView(listOfMovies: [Movie], inputText: String) -> some View {
 
@@ -188,6 +214,26 @@ extension MovieGridViewController {
                 gridLayoutView // Display the grid layout view
             })
         }
+    
+    
+    func updateSimpleView(listOfMovies: [Movie], inputText: String) -> some View {
+
+        let searchView = createSearchbarView(inputText: inputText)
+            
+            // Create the grid layout view
+        var simpleLayoutView = ContentView(listOfMovies: listOfMovies)
+            simpleLayoutView.delegate = self
+            simpleLayoutView.movieChosenDelegate = self
+            
+            
+            // Combine the search view and grid layout view
+            return AnyView(VStack {
+                searchView // Display the search view
+                simpleLayoutView // Display the grid layout view
+            })
+        }
+    
+    
     
     
     
@@ -216,17 +262,18 @@ extension MovieGridViewController {
         
         let movies: [Movie] = movieListPage
         
-            var contentView =
-                ContentView(
-                    listOfMovies: movies
-                )
+        let searchView = createSearchbarView()
         
-        contentView.delegate = self
-        contentView.movieChosenDelegate = self
+        // Create the grid layout view
+        var gridLayoutView = ContentView(listOfMovies: movies)
+        gridLayoutView.delegate = self
+        gridLayoutView.movieChosenDelegate = self
         
-        
-        
-        return contentView
+        // Combine the search view and grid layout view
+        return AnyView(VStack {
+            searchView // Display the search view
+            gridLayoutView // Display the grid layout view
+        })
                 
             
         
@@ -234,11 +281,11 @@ extension MovieGridViewController {
     
 }
 
-extension MovieGridViewController{
+extension MovieSearchViewController{
     
-    class func buildSimpleList() -> MovieGridViewController {
+    class func buildSimpleList() -> MovieSearchViewController {
         
-        let movieController = MovieGridViewController(viewType: .content)
+        let movieController = MovieSearchViewController(viewType: .content)
         
         movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
         
@@ -246,9 +293,9 @@ extension MovieGridViewController{
         
     }
     
-    class func buildGridList() -> MovieGridViewController {
+    class func buildGridList() -> MovieSearchViewController {
         
-        let movieController = MovieGridViewController(viewType: .grid)
+        let movieController = MovieSearchViewController(viewType: .grid)
         
         movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
         
@@ -257,7 +304,7 @@ extension MovieGridViewController{
     }
 }
 
-extension MovieGridViewController{
+extension MovieSearchViewController{
     
     func fetchMovieList(language: String = "en") {
         
