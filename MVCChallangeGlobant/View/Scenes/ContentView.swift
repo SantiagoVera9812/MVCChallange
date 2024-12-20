@@ -27,9 +27,7 @@ struct ContentView: View {
         
             VStack {
                 
-                TextLabelInput(inputText: $inputText, enterText: "Enter a movie")
-                
-                    ListVerticallyMovieViews(listOfMovies: listOfMovies,  onMovieSelected: {
+                ListVerticallyMovieViews(listOfMovies: listOfMovies,  onMovieSelected: {
                         
                         movieID in
                         
