@@ -9,12 +9,27 @@ import Foundation
 import UIKit
 import SwiftUI
 
+protocol MovieServiceProtocol{
+    
+    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?])
+    
+}
+
+protocol PageDelegate: AnyObject {
+    var page: Int { get set }
+    var totalResponses: Int { get set }
+    
+    func nextPage()
+    func previousPage()
+}
+
 class MovieSearchViewController: UIViewController {
     
     var page: Int = 1
     
     var totalResponses: Int = 500
     var movieListPage: [Movie] = []
+    var loginUser: AnyObject
     private var movieService: MovieListService
     private var viewType: ViewType
         
@@ -27,13 +42,16 @@ class MovieSearchViewController: UIViewController {
         return movieService.getAsyncImage(posterPath: posterPath)
     }
     
-    init(movieService: MovieListService = MovieListService(), viewType: ViewType){
+    init(movieService: MovieListService = MovieListService(), viewType: ViewType, loginUser: AnyObject){
         print("on movie grid controller")
+        self.loginUser = loginUser
         self.movieService = movieService
         self.viewType = viewType
         super.init(nibName: nil, bundle: nil)
         fetchMovieList()
         self.movieService.delegate = self
+        
+        print(loginUser)
         
         
     }
@@ -122,7 +140,7 @@ extension MovieSearchViewController: MovieSelectedDelegate{
     
     func goToMovieDetails(id: Int) {
         
-        let hostingController = MovieDetailViewController(movieID: id)
+        let hostingController = MovieDetailViewController(movieID: id, loginUser: loginUser, registerService: CoreDataService(movieid: Int64(id)))
         
         let navBarStyle = NavigationBarWithImageAsAButton(title: "Movie Details", rightButtonImage: UIImage(systemName: "star"))
         
@@ -241,9 +259,9 @@ extension MovieSearchViewController {
 
 extension MovieSearchViewController{
     
-    class func buildSimpleList() -> MovieSearchViewController {
+    class func buildSimpleList(loginUser: AnyObject) -> MovieSearchViewController {
         
-        let movieController = MovieSearchViewController(viewType: .content)
+        let movieController = MovieSearchViewController(viewType: .content, loginUser: loginUser)
         
         movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
         
@@ -251,9 +269,9 @@ extension MovieSearchViewController{
         
     }
     
-    class func buildGridList() -> MovieSearchViewController {
+    class func buildGridList(loginUser: AnyObject) -> MovieSearchViewController {
         
-        let movieController = MovieSearchViewController(viewType: .grid)
+        let movieController = MovieSearchViewController(viewType: .grid, loginUser: loginUser)
         
         movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
         

@@ -59,7 +59,7 @@ struct MoviewViewWrapper: View {
     var body: some View {
         
             UIViewControllerWrapper(
-                makeUIViewController: { MovieViewController.buildGridList()}
+                makeUIViewController: { MovieViewController.buildGridList(onLoginUser: MovieEntity())}
             )
             .navigationBarTitle("Login", displayMode: .inline)
             .navigationBarItems(trailing: Button("Settings") {

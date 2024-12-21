@@ -31,5 +31,5 @@ struct SearchTextLabel: View {
 }
 
 #Preview {
-    SearchView(movieListPage: [], updateDelegate: MovieSearchViewController(viewType: .grid))
+    SearchView(movieListPage: [], updateDelegate: MovieSearchViewController(viewType: .grid, loginUser: MovieEntity()))
 }
