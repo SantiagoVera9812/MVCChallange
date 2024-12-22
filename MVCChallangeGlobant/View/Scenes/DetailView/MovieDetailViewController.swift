@@ -24,6 +24,8 @@ protocol DetailFetchDelegate: AnyObject{
 
 class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     
+    let registerService: enterAppDelegate
+    
     var movieID: Int
     var isFavorite: Bool = false {
             didSet {
@@ -35,18 +37,25 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     
     var movieListPage: [MovieDetailsResponseDTO] = []
     private var movieService: MovieDetailsService
+    var loginUser: AnyObject
+    var userFavouriteMovies: NSSet?
     
-    init(movieID: Int, movieService: MovieDetailsService = MovieDetailsService()){
+    init(movieID: Int, movieService: MovieDetailsService = MovieDetailsService(), loginUser: AnyObject, registerService: enterAppDelegate = CoreDataService()){
         
         print("en detail controller")
         
         self.movieID = movieID
         self.movieService = movieService
+        self.loginUser = loginUser
+        self.registerService = registerService
+        
         print(self.movieID)
         super.init(nibName: nil, bundle: nil)
         fetchMovieDetailsList(idMovie: movieID, language: "en")
         self.movieService.delegate = self
         
+        setMoviesAlreadyExist()
+        isFavorite = doesMovieIdExist(in: self.userFavouriteMovies, movieId: self.movieID)
     }
     
     required init?(coder: NSCoder) {
@@ -60,18 +69,50 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
         
     func configureNavigationBar() {
         
-        
-        let rightButton = UIBarButtonItem(image: isFavorite ? UIImage(systemName: "star.fill") : UIImage(systemName: "star"), style: .plain, target: self, action: #selector(rightButtonTapped))
+       let rightButton = UIBarButtonItem(image: isFavorite ? UIImage(systemName: "star.fill") : UIImage(systemName: "star"), style: .plain, target: self, action: #selector(rightButtonTapped))
             self.navigationItem.rightBarButtonItem = rightButton
+        
         }
     
     @objc func rightButtonTapped() {
         
         print("star buttom pressed")
+        
+        if isFavorite == true {
             
-        isFavorite.toggle()
+            print("That movie is already a favority")
+        } else {
+            
+            registerService.oneToManyRelation(oneObject: MovieDetail(dto: movieDetails), to: loginUser)
+            
+            isFavorite.toggle()
+            
+        }
         
         }
+    
+    private func setMoviesAlreadyExist(){
+        
+        guard let userLogged = loginUser as? UserEntity else {return }
+        guard let moviesLogged = userLogged.favouriteMovies else {return}
+        
+        self.userFavouriteMovies = moviesLogged
+        
+        
+    }
+    
+   private func doesMovieIdExist(in movieSet: NSSet?, movieId: Int) -> Bool {
+        guard let movieSet = movieSet else { return false }
+        
+        for case let movieEntity as MovieEntity in movieSet {
+
+            if movieEntity.id == movieId {
+                return true
+            }
+        }
+        
+        return false
+    }
     
 
 }
@@ -115,9 +156,9 @@ extension MovieDetailViewController{
 
 extension MovieDetailViewController {
     
-    class func buildMovieDetails(movieId: Int) -> MovieDetailViewController {
+    class func buildMovieDetails(movieId: Int, onLoginUser: AnyObject) -> MovieDetailViewController {
         
-        let movieDetailController = MovieDetailViewController(movieID: movieId)
+        let movieDetailController = MovieDetailViewController(movieID: movieId, loginUser: onLoginUser)
         
         let navBarStyle = NavigationBarWithRightButton(title: "Movie Details", rightButtonTitle: "star")
         
@@ -147,3 +188,5 @@ extension MovieDetailViewController {
         }
     }
 }
+
+

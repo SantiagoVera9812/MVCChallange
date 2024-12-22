@@ -17,12 +17,68 @@ class LocalService{
 protocol enterAppDelegate: AnyObject {
     
     func registerUser(email: String, password: String)
+    func oneToManyRelation(oneObject: AnyObject, to: AnyObject)
     func loginUser(email: String, password: String) -> AnyObject?
     func modifyUser(email: String, password: String)
+    func fetchUser(userToFetch: AnyObject) -> AnyObject?
 }
 
 class CoreDataService: enterAppDelegate {
+    
+    var movieId: Int64
+    
+    init(movieid: Int64 = 0){
+        self.movieId = movieid
+    }
+    
+    
+    func fetchUser(userToFetch: AnyObject) -> AnyObject? {
         
+        guard let userLogged = userToFetch as? UserEntity else {return nil }
+        return userLogged
+    }
+    
+    
+    func oneToManyRelation(oneObject movie: AnyObject, to user: AnyObject) {
+        
+        print("adding a movie to a user")
+        
+        guard let userLogged = user as? UserEntity else {return }
+        print(userLogged)
+        
+        guard let movieToAdd = movie as? MovieDetail else {return }
+        
+        let context = CoreDataStack.shared.context
+        
+        let newMovie = MovieEntity(context: context)
+            newMovie.title = movieToAdd.title
+            newMovie.status = movieToAdd.status
+            newMovie.vote_average = movieToAdd.vote_average
+            newMovie.release_date = movieToAdd.release_date
+            newMovie.overview = movieToAdd.overview
+            newMovie.poster_path = movieToAdd.poster_path
+            newMovie.id = movieId
+        
+        for genre in movieToAdd.genres {
+                // Create or fetch GenreEntity if needed, and add to movie's genres
+                let genreEntity = GenresEntity(context: context)
+                genreEntity.name = genre.name
+                newMovie.addToGenres(genreEntity) // Add genre to movie's genres
+            }
+        
+        userLogged.addToFavouriteMovies(newMovie)
+            
+            // Save the context
+            do {
+                try context.save()
+                print("Movie added to user's favourites successfully!")
+            } catch {
+                print("Failed to save context after adding movie: \(error)")
+            }
+        
+    }
+    
+    
     func modifyUser(email: String, password: String) {
         print("on modify user")
     }

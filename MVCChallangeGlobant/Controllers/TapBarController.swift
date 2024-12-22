@@ -12,8 +12,10 @@ import UIKit
 class TabBarController: UITabBarController {
     
     let navigationStyle: NavigationBarStyle
+    let loginUser: AnyObject
     
-    init(controllers: [UIViewController], navigationStyle: NavigationBarStyle) {
+    init(controllers: [UIViewController], navigationStyle: NavigationBarStyle, loginUser: AnyObject) {
+        self.loginUser = loginUser
         self.navigationStyle = navigationStyle
         super.init(nibName: nil, bundle: nil)
         self.viewControllers = controllers
@@ -32,10 +34,10 @@ class TabBarController: UITabBarController {
 
 extension TabBarController {
     
-    class func buildCars() -> TabBarController {
-        let controllers = [MovieSearchViewController.buildSimpleList(), MovieSearchViewController.buildGridList()]
+    class func buildCars(onLoginUser: AnyObject) -> TabBarController {
+        let controllers = [MovieViewController.buildSimpleList(onLoginUser: onLoginUser), MovieSearchViewController.buildGridList(loginUser: onLoginUser)]
         let navStyle = NavigationBarWithRightButton(title: "Movies", rightButtonTitle: "Settings")
-        let controller = TabBarController(controllers: controllers, navigationStyle: navStyle)
+        let controller = TabBarController(controllers: controllers, navigationStyle: navStyle, loginUser: onLoginUser)
         return controller
     }
 }

@@ -10,26 +10,14 @@ import SwiftUI
 import UIKit
 import Combine
 
-protocol MovieServiceProtocol{
-    
-    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?])
-    
-}
-
-protocol PageDelegate: AnyObject {
-    var page: Int { get set }
-    var totalResponses: Int { get set }
-    
-    func nextPage()
-    func previousPage()
-}
 
 class MovieViewController: UIViewController {
     
     var page: Int = 1
     var totalResponses: Int = 500
-    var movieListPage: [MovieResponseDTO?] = []
-    private var movieService: MovieListService
+    let loginUser: AnyObject
+    let registerService: enterAppDelegate
+    
     private var viewType: ViewType
         
         enum ViewType {
@@ -37,17 +25,26 @@ class MovieViewController: UIViewController {
             case content
         }
     
-    func getPosterView(for posterPath: String) -> some View {
-        return movieService.getAsyncImage(posterPath: posterPath)
-    }
     
-    init(movieService: MovieListService = MovieListService(), viewType: ViewType){
+    init(movieService: MovieListService = MovieListService(), viewType: ViewType, loginUser: AnyObject, registerService: enterAppDelegate = CoreDataService()){
        
-        self.movieService = movieService
         self.viewType = viewType
+        self.loginUser = loginUser
+        self.registerService = registerService
         super.init(nibName: nil, bundle: nil)
-        fetchMovieList()
-        self.movieService.delegate = self
+        
+        guard let userUsedService = registerService.fetchUser(userToFetch: self.loginUser) else {return }
+        
+        HostingControllerBuilder.hostingControllerCreateView(in: self) {
+                // Ensure the closure returns a SwiftUI view
+                switch self.viewType {
+                case .grid:
+                    return AnyView( self.createGridView(listOfMovie: userUsedService.favouriteMovies)) // Return the grid view
+                case .content:
+                    return AnyView(self.createContentView(listOfMovie: userUsedService.favouriteMovies)) // Return the content view
+                }
+            }
+        
         
         
     }
@@ -70,67 +67,42 @@ class MovieViewController: UIViewController {
             super.viewDidLoad()
         
         }
-
-    //Esta funcion se llamara cuando se termine el llamado a la api
     
-    func updateMovieListPage(){
+    private func convertToMovieArray(from movieSet: NSSet?) -> [Movie] {
+        guard let movieSet = movieSet else { return [] }
         
-        HostingControllerBuilder.hostingControllerCreateView(in: self) {
-                // Ensure the closure returns a SwiftUI view
-                switch self.viewType {
-                case .grid:
-                    return AnyView( self.createGridView()) // Return the grid view
-                case .content:
-                    return AnyView(self.createContentView()) // Return the content view
-                }
+        var movieArray: [Movie] = []
+        
+        for case let movieEntity as MovieEntity in movieSet {
+            // Creating a Movie struct from MovieEntity properties
+            if let title = movieEntity.title,
+               let releaseDate = movieEntity.release_date,
+               let posterPath = movieEntity.poster_path {
+                let movie = Movie(
+                    
+                    id: Int(movieEntity.id), // You might want to replace this with a proper id if you have one
+                    release_date: releaseDate,
+                    title: title,
+                    vote_average: movieEntity.vote_average,
+                    poster_path: posterPath
+                    
+                )
+                movieArray.append(movie)
             }
+        }
         
+        return movieArray
     }
-    
-   
-}
 
-extension MovieViewController : PageDelegate {
-    
-    func nextPage() {
-        if page < totalResponses {
-            page += 1
-            fetchMovieList()
-            
-        }
-        print(page)
-    }
-    
-    func previousPage() {
-        if page > 1 {
-            page -= 1
-            fetchMovieList()
-        }
-        print(page)
-    }
-    
-    
-}
-
-extension MovieViewController : MovieServiceProtocol {
-    
-    func getMovieService(movieTotalResponse: Int, movieList: [MovieResponseDTO?]) {
-        
-        
-        DispatchQueue.main.async { [weak self] in
-            self?.movieListPage = movieList
-            self?.totalResponses = movieTotalResponse
-            self?.updateMovieListPage()
-        }
-    }
-    
 }
 
 extension MovieViewController: MovieSelectedDelegate{
     
     func goToMovieDetails(id: Int) {
         
-        let hostingController = MovieDetailViewController(movieID: id)
+        print("\(id)" + "en go to movie details funcion")
+        
+        let hostingController = MovieDetailViewController(movieID: id, loginUser: loginUser)
     
         self.navigationController?.pushViewController(hostingController, animated: true)
     }
@@ -140,15 +112,16 @@ extension MovieViewController: MovieSelectedDelegate{
 
 extension MovieViewController {
     
-    func createGridView() -> some View {
+    func createGridView(listOfMovie: NSSet?) -> some View {
+        
+        let movies = convertToMovieArray(from: listOfMovie)
         
             var gridLayoutView =
                GridLayoutView(
-                    listOfMovies: movieListPage.toMovies
+                listOfMovies: movies
                     //textLabelInput: TextLabelInput(inputText: <#T##Binding<String>#>, enterText: <#T##String#>)
                 )
                         
-        gridLayoutView.delegate = self
         gridLayoutView.movieChosenDelegate = self
             
         
@@ -157,30 +130,29 @@ extension MovieViewController {
     }
     
     
-    func createContentView() -> some View {
+    func createContentView(listOfMovie: NSSet?) -> some View {
+        
+        var movies = convertToMovieArray(from: listOfMovie)
         
             var contentView =
                 ContentView(
-                    listOfMovies: movieListPage.toMovies
+                    listOfMovies: movies
                 )
         
-        contentView.delegate = self
         contentView.movieChosenDelegate = self
         
         
         return contentView
                 
-            
-        
     }
     
 }
 
 extension MovieViewController{
     
-    class func buildSimpleList() -> MovieViewController {
+    class func buildSimpleList(onLoginUser: AnyObject) -> MovieViewController {
         
-        let movieController = MovieViewController(viewType: .content)
+        let movieController = MovieViewController(viewType: .content, loginUser: onLoginUser)
         
         movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
         
@@ -188,9 +160,9 @@ extension MovieViewController{
         
     }
     
-    class func buildGridList() -> MovieViewController {
+    class func buildGridList(onLoginUser: AnyObject) -> MovieViewController {
         
-        let movieController = MovieViewController(viewType: .grid)
+        let movieController = MovieViewController(viewType: .grid, loginUser: onLoginUser)
         
         movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
         
@@ -199,63 +171,7 @@ extension MovieViewController{
     }
 }
 
-extension MovieViewController {
-    
-    func navigateToMovieDetail(movieID: Int) {
-        let movieDetailVC = MovieDetailViewController(movieID: movieID)
-            movieDetailVC.movieID = movieID // Set the selected movie ID
-            self.navigationController?.pushViewController(movieDetailVC, animated: true) // Navigate to the movie detail view controller
-        }
-}
 
-extension MovieViewController{
-    
-    func fetchMovieList(language: String = "en") {
-        
-        movieService.getMoviesList(page: page, language: language) { [weak self] movieListResponse in
-            
-            
-                if let movies = movieListResponse {
-                    
-                    print(self?.totalResponses ?? 0)
-                    
-                    // Process the movie results
-                    var listMoviesResponse: [MovieResponseDTO] = []
-                    movies.results.forEach { movieFound in
-                        listMoviesResponse.append(movieFound ?? MovieResponseDTO.mock)
-                    }
-                    
-                    self?.movieListPage = listMoviesResponse
-                    
-                } else {
-                    
-                    print("error")
-                }
-                
-            
-        }
-    }
-    
-    
-}
 
-class ImageLoader: ObservableObject {
-    @Published var image: UIImage? = nil
-    var cancellable: AnyCancellable?
-    
-    func loadImage(from url: URL) {
-        cancellable = URLSession.shared.dataTaskPublisher(for: url)
-            .map { $0.data }
-            .tryMap { data -> UIImage? in
-                guard let image = UIImage(data: data) else {
-                    throw URLError(.badURL) 
-                }
-                return image
-            }
-            .replaceError(with: nil)
-            .receive(on: DispatchQueue.main)
-            .assign(to: \.image, on: self)
-    }
-}
 
 

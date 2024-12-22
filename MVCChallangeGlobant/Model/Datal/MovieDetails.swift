@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MovieDetail {
+class MovieDetail {
     
     let title: String
     let status: String
