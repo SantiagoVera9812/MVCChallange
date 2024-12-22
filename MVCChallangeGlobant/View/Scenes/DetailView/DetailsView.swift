@@ -9,41 +9,43 @@ import Foundation
 import SwiftUI
 
 struct MovieDetails: View {
-    
     let movieId: Int
     let movie: MovieDetail
     
     var body: some View {
-        
-        GeometryReader { geometry in
-            
-            VStack {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
                 
-                MovieImageDetails(titulo: movie.title, voteAvarage: movie.vote_average, fechaDeLanzamiento: movie.release_date, posterPath: movie.poster_path)
-                    .frame(height: geometry.size.height * 0.5)
+                // Imagen y detalles principales
+                MovieImageDetails(
+                    titulo: movie.title,
+                    voteAverage: movie.vote_average,
+                    fechaDeLanzamiento: movie.release_date,
+                    posterPath: movie.poster_path
+                )
                 
+                // Géneros
                 GenreListView(genres: movie.genres)
                     
                 
+                // Encabezado Overview
                 Text("Overview")
-                    .font(.title)
-                    .foregroundStyle(.black)
+                    .font(.title2)
                     .fontWeight(.bold)
-                    .padding(20)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.2)
+                    .padding(.horizontal)
                 
+                // Descripción de la Película
                 Text(movie.overview)
-                    .font(.subheadline)
-                    .foregroundStyle(.black)
-                    .minimumScaleFactor(0.2)
-                
-                
-                
-            }.onAppear{
-                print(movieId)
+                    .font(.body)
+                    .foregroundColor(.gray)
+                    .padding(.horizontal)
+                    .padding(.bottom, 20)
             }
+        }
+        .background(Color(.systemGroupedBackground))
+        .ignoresSafeArea(edges: .top)
+        .onAppear {
+            print(movieId)
         }
     }
 }
-

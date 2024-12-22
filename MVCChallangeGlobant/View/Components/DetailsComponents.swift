@@ -19,96 +19,61 @@ struct StarRatingView: View {
                     .foregroundColor(index < Int(rating) ? .yellow : .gray)
                     .font(.system(size: 15))
             }
-                    }
-    }
-}
-
-struct LoadingView: View {
-    var body: some View {
-        ProgressView("Loading...")
+        }
     }
 }
 
 struct GenreListView: View {
-    
     let genres: [Genre]
     
     var body: some View {
-        
-        HStack {
-                    ForEach(genres.indices, id: \.self) { index in
-                        Text(genres[index].name)
-                        
-                        if index < genres.count - 1 {
-                            Text(".")
-                        }
-                    }
-                }
-                .padding()
+        HStack(spacing: 8) {
+            ForEach(genres.indices, id: \.self) { index in
+                Text(genres[index].name)
+                    .font(.caption)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(Color.blue.opacity(0.8))
+                    .cornerRadius(8)
             }
+        }
+        .padding(.horizontal)
     }
+}
 
 struct MovieImageDetails: View {
-    
     let titulo: String
-    let voteAvarage: Float
+    let voteAverage: Float
     let fechaDeLanzamiento: String
     let posterPath: String
    
     var body: some View {
-        
-        GeometryReader { geometry in
-            
-            ZStack{
-                
+        VStack {
+            // Contenedor con fondo gris oscuro
+            VStack(alignment: .center, spacing: 12) {
                 MoviePosterView(posterPath: posterPath)
-                    .scaledToFill()
-                    .clipped()
-                    .blur(radius: 10)
-                    .opacity(0.7)
-                    .frame(height: geometry.size.height * 0.5)
+                    .frame(width: 150, height: 220)
+                    .shadow(radius: 5)
+                
+                VStack(alignment: .center, spacing: 6) {
+                    Text(titulo)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(.white)
                     
-                
-                VStack{
-                    HStack {
-                        
-                        MoviePosterView(posterPath: posterPath)
-                            .scaledToFit()
-                            
-                            
-                        
-                        VStack(alignment: .leading) {
-                            
-                            Text(titulo)
-                                .font(.title)
-                                .foregroundStyle(.white)
-                                .fontWeight(.bold)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.2)
-                            
-                            Text(fechaDeLanzamiento)
-                                .font(.subheadline)
-                                .foregroundStyle(.white)
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.2)
-                            
-                            StarRatingView(rating: voteAvarage)
-                                .padding(.top, 5)
-                            
-                        }
-                        .padding(20)
-                        
-                    }
+                    Text(fechaDeLanzamiento)
+                        .font(.subheadline)
+                        .foregroundColor(.white)
+                    
+                    StarRatingView(rating: voteAverage)
                 }
-                
-                .cornerRadius(12)
-                .padding()
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color(red: 28/255, green: 28/255, blue: 30/255)) // Gris oscuro GPT
+            .padding(.top, 40)
         }
     }
-        
-        
-        
-    }
-
-
+}

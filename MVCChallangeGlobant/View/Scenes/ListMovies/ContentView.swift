@@ -71,7 +71,5 @@ struct MoviewViewWrapper: View {
 }
 
 #Preview {
-    
         MoviewViewWrapper()
-    
 }
