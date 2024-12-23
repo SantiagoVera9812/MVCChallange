@@ -21,10 +21,53 @@ protocol enterAppDelegate: AnyObject {
     func loginUser(email: String, password: String) -> AnyObject?
     func modifyUser(email: String, password: String)
     func fetchUser(userToFetch: AnyObject) -> AnyObject?
+    func removeMovieFromFavorites(from user: AnyObject) -> AnyObject?
     
 }
 
 class CoreDataService: enterAppDelegate {
+    
+    
+    func removeMovieFromFavorites(from user: AnyObject) -> AnyObject? {
+        
+        print("removing a movie from a user")
+        
+        guard let userLogged = user as? UserEntity else {
+            print("invalid user")
+            return nil
+        }
+        
+        print(userLogged)
+        
+        let context = CoreDataStack.shared.context
+        
+        // Fetch the movie to remove from user's favorites using its ID
+        if let favoriteMovies = userLogged.favouriteMovies as? Set<MovieEntity> {
+            for movie in favoriteMovies {
+                if movie.id == movieId { // Assuming 'id' is a property of MovieEntity
+                    // Remove movie from user's favorites
+                    userLogged.removeFromFavouriteMovies(movie)
+                    
+                    // Delete the movie from the context
+                    context.delete(movie)
+
+                    // Save the context
+                    do {
+                        try context.save()
+                        print("Movie removed from user's favourites successfully!")
+                        return userLogged
+                    } catch {
+                        print("Failed to save context after removing movie: \(error)")
+                        return nil
+                    }
+                }
+            }
+        }
+        
+        print("Movie with ID \(movieId) not found in user's favorites.")
+        return nil
+    }
+    
     
     var movieId: Int64
     
@@ -39,7 +82,7 @@ class CoreDataService: enterAppDelegate {
         return userLogged
     }
     
-    
+
     func oneToManyRelation(oneObject movie: AnyObject, to user: AnyObject) -> AnyObject? {
         
         print("adding a movie to a user")

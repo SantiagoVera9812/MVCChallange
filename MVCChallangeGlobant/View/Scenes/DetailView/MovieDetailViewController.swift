@@ -53,8 +53,7 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
         self.movieID = movieID
         self.movieService = movieService
         self.loginUser = loginUser
-        self.registerService = registerService
-        
+        self.registerService = CoreDataService(movieid: Int64(self.movieID))
         print(self.movieID)
         super.init(nibName: nil, bundle: nil)
         fetchMovieDetailsList(idMovie: movieID, language: language)
@@ -87,6 +86,15 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
         if isFavorite == true {
             
             print("That movie is already a favority")
+            
+            guard let userUpdated = registerService.removeMovieFromFavorites(from: loginUser) else {return }
+            
+            isFavorite.toggle()
+            updateLoginUser(userUpdated)
+            
+            print(userUpdated)
+            
+            
         } else {
             
             guard let userUpdated = registerService.oneToManyRelation(oneObject: MovieDetail(dto: movieDetails), to: loginUser) else {return }
