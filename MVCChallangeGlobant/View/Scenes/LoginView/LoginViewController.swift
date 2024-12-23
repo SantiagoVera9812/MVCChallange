@@ -59,7 +59,7 @@ class LoginViewController: UIViewController, LoginViewDelegate{
         
         guard let loginUser = registerService.loginUser(email: user, password: password) else {return self.showErrorAlertWithMessage("Uusario no encontrado")}
         
-        let movieViewController = TabBarController.buildCars(onLoginUser: loginUser)
+        let movieViewController = TabBarController.buildCars(onLoginUser: loginUser, language: "pt")
             self.navigationController?.pushViewController(movieViewController, animated: true)
         
     }

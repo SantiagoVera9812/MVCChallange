@@ -49,14 +49,16 @@ struct NavigationBarTitle: NavigationBarStyle {
     }
 }
 
-struct NavigationBarWithRightButton: NavigationBarStyle {
+class NavigationBarWithRightButton: NavigationBarStyle {
     
     private let title: String
     private let rightButtonTitle: String
+    var rightButtonAction: (() -> Void)?
     
-    init(title: String, rightButtonTitle: String) {
+    init(title: String, rightButtonTitle: String, rightButtonAction: (() -> Void)? = nil) {
         self.title = title
         self.rightButtonTitle = rightButtonTitle
+        self.rightButtonAction = rightButtonAction
     }
     
     func configure(_ viewController: UIViewController) {
@@ -71,9 +73,13 @@ struct NavigationBarWithRightButton: NavigationBarStyle {
         viewController.navigationItem.backBarButtonItem = backButton
         
         // Create the right button
-        let rightButton = UIBarButtonItem(title: rightButtonTitle, style: .plain, target: self, action: nil)
+        let rightButton = UIBarButtonItem(title: rightButtonTitle, style: .plain, target: self, action: #selector(rightButtonTapped))
         viewController.navigationItem.rightBarButtonItem = rightButton
     }
+    
+    @objc func rightButtonTapped() {
+            rightButtonAction?()
+        }
     
 }
 

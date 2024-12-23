@@ -30,6 +30,7 @@ class MovieSearchViewController: UIViewController {
     var totalResponses: Int = 500
     var movieListPage: [Movie] = []
     var loginUser: AnyObject
+    let language: String
     private var movieService: MovieListService
     private var viewType: ViewType
         
@@ -37,23 +38,23 @@ class MovieSearchViewController: UIViewController {
             case grid
             case content
         }
+    weak var updateDelegate: MovieDetailUpdateDelegate?
     
     func getPosterView(for posterPath: String) -> some View {
         return movieService.getAsyncImage(posterPath: posterPath)
     }
     
-    init(movieService: MovieListService = MovieListService(), viewType: ViewType, loginUser: AnyObject){
+    init(movieService: MovieListService = MovieListService(), viewType: ViewType, loginUser: AnyObject, language: String = "en"){
         print("on movie grid controller")
         self.loginUser = loginUser
         self.movieService = movieService
         self.viewType = viewType
+        print("langueage on init \(language)")
+        self.language = language
+        print("langueage on init \(language)")
         super.init(nibName: nil, bundle: nil)
-        fetchMovieList()
+        fetchMovieList(language: language)
         self.movieService.delegate = self
-        
-        print(loginUser)
-        
-        
     }
     
     required init?(coder: NSCoder) {
@@ -64,6 +65,7 @@ class MovieSearchViewController: UIViewController {
         
         if let navigationController = self.navigationController {
                 print("Navigation Controller found: \(navigationController.description)")
+            print("navigation controller found \(self.loginUser)")
                 
             } else {
                 print("No navigation controller found.")
@@ -101,7 +103,7 @@ extension MovieSearchViewController : PageDelegate {
     func nextPage() {
         if page < totalResponses {
             page += 1
-            fetchMovieList()
+            fetchMovieList(language: language)
             
         }
         print(page)
@@ -114,7 +116,7 @@ extension MovieSearchViewController : PageDelegate {
     func previousPage() {
         if page > 1 {
             page -= 1
-            fetchMovieList()
+            fetchMovieList(language: language)
         }
         print(page)
     }
@@ -136,11 +138,21 @@ extension MovieSearchViewController : MovieServiceProtocol {
     
 }
 
-extension MovieSearchViewController: MovieSelectedDelegate{
+extension MovieSearchViewController: MovieSelectedDelegate, MovieDetailUpdateDelegate{
+    
+    
+    func didUpdateLoginUser(_ user: AnyObject) {
+        self.loginUser = user
+        updateDelegate?.didUpdateLoginUser(self.loginUser)
+        
+    }
+    
     
     func goToMovieDetails(id: Int) {
         
-        let hostingController = MovieDetailViewController(movieID: id, loginUser: loginUser, registerService: CoreDataService(movieid: Int64(id)))
+        let hostingController = MovieDetailViewController(movieID: id, loginUser: loginUser, registerService: CoreDataService(movieid: Int64(id)), language: language)
+        
+        hostingController.updateDelegate = self
         
         let navBarStyle = NavigationBarWithImageAsAButton(title: "Movie Details", rightButtonImage: UIImage(systemName: "star"))
         
@@ -168,6 +180,7 @@ extension MovieSearchViewController: movieUpdatedFromSearchBardelegate {
                     
                     searchbar
                     WarningNoMoviesVie(errorMsg: "No movies found with search: " + inputText)
+                    
                     
                 }
             
@@ -223,17 +236,19 @@ extension MovieSearchViewController {
     func updateGridView(listOfMovies: [Movie], inputText: String) -> some View {
 
         let searchView = createSearchbarView(inputText: inputText)
+        var paginator = PaginatorView()
+        paginator.delegate = self
             
             // Create the grid layout view
         var gridLayoutView = GridLayoutView(listOfMovies: listOfMovies)
-            gridLayoutView.delegate = self
             gridLayoutView.movieChosenDelegate = self
             
             
             // Combine the search view and grid layout view
             return AnyView(VStack {
                 searchView // Display the search view
-                gridLayoutView // Display the grid layout view
+                gridLayoutView
+                paginator// Display the grid layout view
             })
         }
     
@@ -241,39 +256,42 @@ extension MovieSearchViewController {
     func updateSimpleView(listOfMovies: [Movie], inputText: String) -> some View {
 
         let searchView = createSearchbarView(inputText: inputText)
-            
+        var paginator = PaginatorView()
+        paginator.delegate = self
             // Create the grid layout view
         var simpleLayoutView = ContentView(listOfMovies: listOfMovies)
-            simpleLayoutView.delegate = self
             simpleLayoutView.movieChosenDelegate = self
             
             
             // Combine the search view and grid layout view
             return AnyView(VStack {
                 searchView // Display the search view
-                simpleLayoutView // Display the grid layout view
+                simpleLayoutView
+                paginator// Display the grid layout view
             })
         }
 
 }
 
-extension MovieSearchViewController{
+extension MovieSearchViewController {
     
-    class func buildSimpleList(loginUser: AnyObject) -> MovieSearchViewController {
+    class func buildSimpleList(loginUser: AnyObject, language: String = "en") -> MovieSearchViewController {
         
-        let movieController = MovieSearchViewController(viewType: .content, loginUser: loginUser)
+        print("language on buildsimplelist: \(language)")
+        let movieController = MovieSearchViewController(viewType: .content, loginUser: loginUser, language: language)
         
-        movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
+        movieController.tabBarItem.image = UIImage(systemName: "magnifyingglass.circle.fill")
         
         return movieController
         
     }
     
-    class func buildGridList(loginUser: AnyObject) -> MovieSearchViewController {
+    class func buildGridList(loginUser: AnyObject, language: String = "en") -> MovieSearchViewController {
         
-        let movieController = MovieSearchViewController(viewType: .grid, loginUser: loginUser)
+        print("language on build on grid: \(language)")
+        let movieController = MovieSearchViewController(viewType: .grid, loginUser: loginUser, language: language)
         
-        movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
+        movieController.tabBarItem.image = UIImage(systemName: "magnifyingglass.circle.fill")
         
         return movieController
         
@@ -282,10 +300,11 @@ extension MovieSearchViewController{
 
 extension MovieSearchViewController{
     
-    func fetchMovieList(language: String = "en") {
+    func fetchMovieList(language: String) {
         
         movieService.getMoviesList(page: page, language: language) { [weak self] movieListResponse in
-            
+                
+            print("language on fetch movie list \(language)")
             
                 if let movies = movieListResponse {
                     
