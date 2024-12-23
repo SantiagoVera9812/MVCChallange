@@ -19,6 +19,7 @@ class LoginViewController: UIViewController, LoginViewDelegate{
     
     init(registerService: enterAppDelegate = CoreDataService()) {
         
+        print("on login view")
         self.registerService = registerService
         super.init(nibName: nil, bundle: nil)
         HostingControllerBuilder.hostingControllerCreateView(in: self) {
@@ -59,8 +60,19 @@ class LoginViewController: UIViewController, LoginViewDelegate{
         
         guard let loginUser = registerService.loginUser(email: user, password: password) else {return self.showErrorAlertWithMessage("Uusario no encontrado")}
         
-        let movieViewController = TabBarController.buildCars(onLoginUser: loginUser, language: "pt")
-            self.navigationController?.pushViewController(movieViewController, animated: true)
+        if let preferredLanguage = Locale.preferredLanguages.first {
+
+            let languageCode = String(preferredLanguage.prefix(2))
+            print("Preferred language code: \(languageCode)")
+            
+            let movieViewController = TabBarController.buildCars(onLoginUser: loginUser, language: languageCode)
+                self.navigationController?.pushViewController(movieViewController, animated: true)
+        } else {
+            
+            let movieViewController = TabBarController.buildCars(onLoginUser: loginUser)
+                self.navigationController?.pushViewController(movieViewController, animated: true)
+        }
+        
         
     }
     
@@ -89,6 +101,7 @@ extension LoginViewController {
     
     
     func createLoginView() -> some View {
+        print("login view")
             var loginView = LoginView()
             loginView.delegate = self
             

@@ -33,13 +33,21 @@ class HostingControllerBuilder {
         in parent: UIViewController,
         createFunction: @escaping () -> Content
     ) {
+        print("on hosting builder")
         let hostingController = UIHostingController(rootView: createFunction())
         
         parent.addChild(hostingController)
         parent.view.addSubview(hostingController.view)
         
-        hostingController.view.frame = parent.view.bounds
-        hostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
+                
+                // Add constraints
+                NSLayoutConstraint.activate([
+                    hostingController.view.topAnchor.constraint(equalTo: parent.view.topAnchor),
+                    hostingController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor),
+                    hostingController.view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),
+                    hostingController.view.trailingAnchor.constraint(equalTo: parent.view.trailingAnchor)
+                ])
         
         hostingController.didMove(toParent: parent)
         
