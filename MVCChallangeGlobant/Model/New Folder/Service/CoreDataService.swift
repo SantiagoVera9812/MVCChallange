@@ -17,10 +17,11 @@ class LocalService{
 protocol enterAppDelegate: AnyObject {
     
     func registerUser(email: String, password: String)
-    func oneToManyRelation(oneObject: AnyObject, to: AnyObject)
+    func oneToManyRelation(oneObject: AnyObject, to: AnyObject) -> AnyObject?
     func loginUser(email: String, password: String) -> AnyObject?
     func modifyUser(email: String, password: String)
     func fetchUser(userToFetch: AnyObject) -> AnyObject?
+    
 }
 
 class CoreDataService: enterAppDelegate {
@@ -39,14 +40,14 @@ class CoreDataService: enterAppDelegate {
     }
     
     
-    func oneToManyRelation(oneObject movie: AnyObject, to user: AnyObject) {
+    func oneToManyRelation(oneObject movie: AnyObject, to user: AnyObject) -> AnyObject? {
         
         print("adding a movie to a user")
         
-        guard let userLogged = user as? UserEntity else {return }
+        guard let userLogged = user as? UserEntity else {return nil }
         print(userLogged)
         
-        guard let movieToAdd = movie as? MovieDetail else {return }
+        guard let movieToAdd = movie as? MovieDetail else {return nil }
         
         let context = CoreDataStack.shared.context
         
@@ -72,8 +73,11 @@ class CoreDataService: enterAppDelegate {
             do {
                 try context.save()
                 print("Movie added to user's favourites successfully!")
+                return userLogged
+            
             } catch {
                 print("Failed to save context after adding movie: \(error)")
+                return nil
             }
         
     }

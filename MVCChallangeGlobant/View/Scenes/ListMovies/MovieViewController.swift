@@ -15,8 +15,10 @@ class MovieViewController: UIViewController {
     
     var page: Int = 1
     var totalResponses: Int = 500
-    let loginUser: AnyObject
+    var loginUser: AnyObject
     let registerService: enterAppDelegate
+    var language: String
+    weak var updateDelegate: MovieDetailUpdateDelegate?
     
     private var viewType: ViewType
         
@@ -26,25 +28,33 @@ class MovieViewController: UIViewController {
         }
     
     
-    init(movieService: MovieListService = MovieListService(), viewType: ViewType, loginUser: AnyObject, registerService: enterAppDelegate = CoreDataService()){
+    init(movieService: MovieListService = MovieListService(), viewType: ViewType, loginUser: AnyObject, registerService: enterAppDelegate = CoreDataService(), language: String){
        
         self.viewType = viewType
         self.loginUser = loginUser
         self.registerService = registerService
+        self.language = language
         super.init(nibName: nil, bundle: nil)
         
         guard let userUsedService = registerService.fetchUser(userToFetch: self.loginUser) else {return }
+        
+        createMovieView(moviesList: userUsedService.favouriteMovies)
+        
+        
+        
+    }
+    
+    private func createMovieView(moviesList: NSSet?){
         
         HostingControllerBuilder.hostingControllerCreateView(in: self) {
                 // Ensure the closure returns a SwiftUI view
                 switch self.viewType {
                 case .grid:
-                    return AnyView( self.createGridView(listOfMovie: userUsedService.favouriteMovies)) // Return the grid view
+                    return AnyView( self.createGridView(listOfMovie: moviesList)) // Return the grid view
                 case .content:
-                    return AnyView(self.createContentView(listOfMovie: userUsedService.favouriteMovies)) // Return the content view
+                    return AnyView(self.createContentView(listOfMovie: moviesList)) // Return the content view
                 }
             }
-        
         
         
     }
@@ -61,12 +71,21 @@ class MovieViewController: UIViewController {
             } else {
                 print("No navigation controller found.")
             }
+        
+        guard let userLogged = registerService.fetchUser(userToFetch: self.loginUser) as? UserEntity else {return }
+        
+        guard let updatedUser = registerService.loginUser(email: userLogged.email ?? "", password: userLogged.password ?? "") else {return }
+        
+        self.createMovieView(moviesList: updatedUser.favouriteMovies)
+        
+        
     }
     
     override func viewDidLoad() {
             super.viewDidLoad()
         
         }
+        
     
     private func convertToMovieArray(from movieSet: NSSet?) -> [Movie] {
         guard let movieSet = movieSet else { return [] }
@@ -96,14 +115,21 @@ class MovieViewController: UIViewController {
 
 }
 
-extension MovieViewController: MovieSelectedDelegate{
+extension MovieViewController: MovieSelectedDelegate, MovieDetailUpdateDelegate {
+    
+    func didUpdateLoginUser(_ user: AnyObject) {
+        self.loginUser = user
+        print("on movie search view update \(loginUser)")
+        
+    }
     
     func goToMovieDetails(id: Int) {
         
         print("\(id)" + "en go to movie details funcion")
         
-        let hostingController = MovieDetailViewController(movieID: id, loginUser: loginUser)
+        let hostingController = MovieDetailViewController(movieID: id, loginUser: loginUser, language: language)
     
+        hostingController.updateDelegate = self
         self.navigationController?.pushViewController(hostingController, animated: true)
     }
     
@@ -132,7 +158,7 @@ extension MovieViewController {
     
     func createContentView(listOfMovie: NSSet?) -> some View {
         
-        var movies = convertToMovieArray(from: listOfMovie)
+        let movies = convertToMovieArray(from: listOfMovie)
         
             var contentView =
                 ContentView(
@@ -150,21 +176,21 @@ extension MovieViewController {
 
 extension MovieViewController{
     
-    class func buildSimpleList(onLoginUser: AnyObject) -> MovieViewController {
+    class func buildSimpleList(onLoginUser: AnyObject, language: String = "en") -> MovieViewController {
         
-        let movieController = MovieViewController(viewType: .content, loginUser: onLoginUser)
+        let movieController = MovieViewController(viewType: .content, loginUser: onLoginUser, language: language)
         
-        movieController.tabBarItem.image = UIImage(systemName: "list.bullet.rectangle")
+        movieController.tabBarItem.image = UIImage(systemName: "star.fill")
         
         return movieController
         
     }
     
-    class func buildGridList(onLoginUser: AnyObject) -> MovieViewController {
+    class func buildGridList(onLoginUser: AnyObject, language: String = "en") -> MovieViewController {
         
-        let movieController = MovieViewController(viewType: .grid, loginUser: onLoginUser)
+        let movieController = MovieViewController(viewType: .grid, loginUser: onLoginUser, language: language)
         
-        movieController.tabBarItem.image = UIImage(systemName: "square.grid.3x3")
+        movieController.tabBarItem.image = UIImage(systemName: "star.fill")
         
         return movieController
         
