@@ -19,11 +19,15 @@ class SidebarViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     let tableView = UITableView()
     
-    let options = ["Change Language", "Toggle View", "Log Out"]
+    
     var selectedLanguage: String = "pt"
     var howView: ViewType = .grid
     weak var delegate: SidebarViewControllerDelegate?
-    
+    var changeLanguageTitle = String.localizedString(forKey: "change_language")
+    var log_off = String.localizedString(forKey: "log_off")
+    var changeView = String.localizedString(forKey: "toggle_view")
+    var options: [String] = []
+
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,6 +35,7 @@ class SidebarViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     func setupTableView() {
+        self.options = [changeLanguageTitle, changeView, log_off]
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
@@ -77,7 +82,7 @@ class SidebarViewController: UIViewController, UITableViewDelegate, UITableViewD
     // MARK: - Actions
     
     func changeLanguage() {
-        let alert = UIAlertController(title: "Select Language", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: changeLanguageTitle, message: nil, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "English", style: .default, handler: { _ in
             self.selectedLanguage = "en"
             self.delegate?.didChangeLanguage(to: self.selectedLanguage)
@@ -100,7 +105,7 @@ class SidebarViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     func toggleView() {
         
-        let alert = UIAlertController(title: "Select View", message: nil, preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: changeView, message: nil, preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Grid View", style: .default, handler: { _ in
             self.howView = .grid
             self.delegate?.didChangeView(to: .grid)
