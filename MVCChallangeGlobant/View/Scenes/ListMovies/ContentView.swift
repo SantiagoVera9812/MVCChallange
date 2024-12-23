@@ -36,18 +36,6 @@ struct ContentView: View {
                 
                 
                 Spacer()
-                HStack {
-                    
-                    PreviousButton{
-                        delegate?.previousPage()
-                    }
-                    
-                    NextButton {
-                        delegate?.nextPage()
-                        
-                    }
-                }
-                .padding()
             }
             
     }

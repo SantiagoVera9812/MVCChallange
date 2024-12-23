@@ -22,9 +22,14 @@ protocol DetailFetchDelegate: AnyObject{
     func fetchMovieDetailsList(idMovie: Int, language: String)
 }
 
+protocol MovieDetailUpdateDelegate: AnyObject {
+    func didUpdateLoginUser(_ user: AnyObject)
+}
+
 class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     
     let registerService: enterAppDelegate
+    weak var updateDelegate: MovieDetailUpdateDelegate?
     
     var movieID: Int
     var isFavorite: Bool = false {
@@ -40,7 +45,8 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
     var loginUser: AnyObject
     var userFavouriteMovies: NSSet?
     
-    init(movieID: Int, movieService: MovieDetailsService = MovieDetailsService(), loginUser: AnyObject, registerService: enterAppDelegate = CoreDataService()){
+    init(movieID: Int, movieService: MovieDetailsService = MovieDetailsService(), loginUser: AnyObject, registerService: enterAppDelegate = CoreDataService(),
+         language: String = "en"){
         
         print("en detail controller")
         
@@ -51,7 +57,7 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
         
         print(self.movieID)
         super.init(nibName: nil, bundle: nil)
-        fetchMovieDetailsList(idMovie: movieID, language: "en")
+        fetchMovieDetailsList(idMovie: movieID, language: language)
         self.movieService.delegate = self
         
         setMoviesAlreadyExist()
@@ -83,9 +89,12 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
             print("That movie is already a favority")
         } else {
             
-            registerService.oneToManyRelation(oneObject: MovieDetail(dto: movieDetails), to: loginUser)
+            guard let userUpdated = registerService.oneToManyRelation(oneObject: MovieDetail(dto: movieDetails), to: loginUser) else {return }
             
             isFavorite.toggle()
+            updateLoginUser(userUpdated)
+            
+            print(userUpdated)
             
         }
         
@@ -113,6 +122,12 @@ class MovieDetailViewController: UIViewController, DetailFetchDelegate {
         
         return false
     }
+    
+    func updateLoginUser(_ user: AnyObject) {
+            self.loginUser = user
+        print("on movie detail view update user \(self.loginUser)")
+        updateDelegate?.didUpdateLoginUser(self.loginUser)
+        }
     
 
 }

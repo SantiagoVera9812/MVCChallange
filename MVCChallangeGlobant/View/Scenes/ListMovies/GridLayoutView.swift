@@ -48,22 +48,6 @@ struct GridLayoutView: View {
                 }, movieChosenDelegate: movieChosenDelegate)
                 
                 
-                
-                
-                
-                Spacer()
-                HStack {
-                    
-                    PreviousButton{
-                        delegate?.previousPage()
-                    }
-                    
-                    NextButton {
-                        delegate?.nextPage()
-                        
-                    }
-                }
-                .padding()
             }
         }
     
