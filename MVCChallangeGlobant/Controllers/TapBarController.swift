@@ -75,12 +75,12 @@ extension TabBarController {
         case .grid:
             let gridListController = MovieViewController.buildGridList(onLoginUser: onLoginUser, language: language)
             let searchViewControllerGrid = MovieSearchViewController.buildGridList(loginUser: onLoginUser, language: language)
-            return [gridListController, searchViewControllerGrid]
+            return [searchViewControllerGrid, gridListController]
             
         case .simple:
             let simpleListController = MovieViewController.buildSimpleList(onLoginUser: onLoginUser, language: language)
             let searchViewControllerList = MovieSearchViewController.buildSimpleList(loginUser: onLoginUser, language: language)
-            return [simpleListController, searchViewControllerList]
+            return [searchViewControllerList, simpleListController]
         }
     }
 }

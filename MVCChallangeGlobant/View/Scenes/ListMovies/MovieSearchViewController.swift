@@ -300,6 +300,7 @@ extension MovieSearchViewController {
 
 extension MovieSearchViewController{
     
+    
     func fetchMovieList(language: String) {
         
         movieService.getMoviesList(page: page, language: language) { [weak self] movieListResponse in

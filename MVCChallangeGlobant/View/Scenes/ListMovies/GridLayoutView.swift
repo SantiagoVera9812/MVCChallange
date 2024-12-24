@@ -14,29 +14,17 @@ struct GridLayoutView: View {
     @State private var listOfMovies: [Movie]
     weak var delegate: PageDelegate?
     weak var searchLabelDelegate: CarSearchDelegate?
-    //var textLabelInput: TextLabelInput
     weak var movieChosenDelegate: MovieSelectedDelegate?
     
     
-    init(listOfMovies: [Movie]/*, textLabelInput: TextLabelInput*/) {
+    init(listOfMovies: [Movie]) {
         self.listOfMovies = listOfMovies
-        //self.textLabelInput = textLabelInput
+       
         
     }
     
     var body: some View {
-        
-      /*      TextLabelInput(inputText: $inputText, enterText: "Enter movie")
-                .onChange(of: inputText) { oldState, newState in
-                    
-                    searchLabelDelegate?.filterMovies(searchText: newState)
-                    
-                    
-                
-                    
-                } */
-            
-            
+    
             VStack {
                 
                 
