@@ -76,36 +76,40 @@ struct ListHorizontalMovieViews: View {
   // Define the number of columns for the grid
   let columns = [
     GridItem(.flexible(), spacing: 5),
+    GridItem(.flexible(), spacing: 5),
     GridItem(.flexible(), spacing: 5)
   ]
   var body: some View {
-    ScrollView {
-      LazyVGrid(columns: columns, spacing: 5) { // Uniform spacing between rows
-        ForEach(listOfMovies, id: \.id) { movieFound in
-          VStack {
-              
-                  HorizontalMovieView(
-                    
-                    movie: movieFound
-                  ) { movieID in
-                      
-                      print(movieID)
-                      movieChosenDelegate?.goToMovieDetails(id: movieID)
-                      
-                  }.onTapGesture {
-                      
-                      movieChosenDelegate?.goToMovieDetails(id: movieFound.id)
+      ZStack {
+          AppTheme.AppColors.background.ignoresSafeArea(.all)
+          ScrollView {
+              LazyVGrid(columns: columns, spacing: 5) { // Uniform spacing between rows
+                  ForEach(listOfMovies, id: \.id) { movieFound in
+                      VStack {
+                          
+                          HorizontalMovieView(
+                            
+                            movie: movieFound
+                          ) { movieID in
+                              
+                              print(movieID)
+                              movieChosenDelegate?.goToMovieDetails(id: movieID)
+                              
+                          }.onTapGesture {
+                              
+                              movieChosenDelegate?.goToMovieDetails(id: movieFound.id)
+                          }
+                          
+                          .aspectRatio(2/3, contentMode: .fill) // Fixed aspect ratio for the images
+                          .cornerRadius(12) // Rounded corners for each movie poster
+                          .shadow(radius: 6) // Add shadow for a sleek look
+                          
+                      }
                   }
-                  
-                  .aspectRatio(2/3, contentMode: .fill) // Fixed aspect ratio for the images
-                  .cornerRadius(12) // Rounded corners for each movie poster
-                  .shadow(radius: 6) // Add shadow for a sleek look
-              
+              }
+              .padding(5) // Padding around the grid
+              .scaledToFit()
           }
-        }
       }
-      .padding(5) // Padding around the grid
-      .scaledToFit()
-    }
   }
 }

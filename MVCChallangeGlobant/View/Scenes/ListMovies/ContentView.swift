@@ -25,18 +25,23 @@ struct ContentView: View {
     
     var body: some View {
         
+        ZStack {
+            AppTheme.AppColors.background.ignoresSafeArea(.all)
+            
             VStack {
                 
                 ListVerticallyMovieViews(listOfMovies: listOfMovies,  onMovieSelected: {
-                        
-                        movieID in
-                        
-                        
-                    }, movieChosenDelegate: movieChosenDelegate)
+                    
+                    movieID in
+                    
+                    
+                }, movieChosenDelegate: movieChosenDelegate)
                 
                 
                 Spacer()
             }
+            
+        }
             
     }
     
@@ -49,6 +54,7 @@ struct MoviewViewWrapper: View {
             UIViewControllerWrapper(
                 makeUIViewController: { MovieViewController.buildGridList(onLoginUser: MovieEntity())}
             )
+            .background(AppTheme.AppColors.background)
             .navigationBarTitle("Login", displayMode: .inline)
             .navigationBarItems(trailing: Button("Settings") {
                 // Action for Help button

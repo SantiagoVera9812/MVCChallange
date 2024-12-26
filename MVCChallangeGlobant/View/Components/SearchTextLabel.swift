@@ -14,19 +14,21 @@ struct SearchTextLabel: View {
     
 
     var body: some View {
-        TextLabelInput(inputText: $inputText, enterText: "Enter movie")
-            .onChange(of: inputText) { oldState, newState in
-                
-                print("old state search text label: \(oldState)")
-                print("new State search text label: \(newState)")
-                
-                searchLabelDelegate?.inputText = newState
-                searchLabelDelegate?.filterMovies(searchText: newState)
-                searchLabelDelegate?.updateMovieListPage()
-        
-            }
-    
-            .padding()
+        ZStack {
+            
+            TextLabelInput(inputText: $inputText, enterText: "Enter movie")
+                .onChange(of: inputText) { oldState, newState in
+                    
+                    print("old state search text label: \(oldState)")
+                    print("new State search text label: \(newState)")
+                    
+                    searchLabelDelegate?.inputText = newState
+                    searchLabelDelegate?.filterMovies(searchText: newState)
+                    searchLabelDelegate?.updateMovieListPage()
+                    
+                }
+                .padding()
+        }
     }
 }
 

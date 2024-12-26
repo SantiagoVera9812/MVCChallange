@@ -24,35 +24,47 @@ struct MovieListViewCell: View{
                 VStack(alignment: .leading) {
                     
                     Text(movie.title)
-                        .font(.title)
+                        .font(.headline)
                         .fontWeight(.bold)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.5)
+//                        .minimumScaleFactor(0.5)
                     
                     Text(movie.release_date)
                         .font(.subheadline)
                         .foregroundColor(.gray)
                         .lineLimit(1)
-                        .minimumScaleFactor(0.5)
+//                        .minimumScaleFactor(0.5)
                     
-                    StarRatingView(rating: movie.vote_average)
-                        .padding(.top, 5)
+                    HStack {
+                        Text(String(format: "%.1f", movie.vote_average))
+                            .foregroundColor(.yellow)
+                            .bold()
+                        
+                        Image(systemName: "star.fill")
+                            .foregroundColor(.yellow)
+                    }
+                    
+//                    StarRatingView(rating: movie.vote_average)
+//                        .padding(.top, 5)
                     
                 }
                 .onTapGesture {
                     onMovieSelected(movie.id)
                 }
                 .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
             }
             .onTapGesture {
                 onMovieSelected(movie.id)
             }
+            
         }
+        .padding(.leading)
         
-        .background(.ultraThinMaterial)
+//        .background(.ultraThinMaterial)
         .cornerRadius(12)
-        .shadow(radius: 5)
+//        .shadow(radius: 5)
         
     }
 }
@@ -72,26 +84,26 @@ struct HorizontalMovieView: View {
             VStack {
                 
                 
-                Text(movie.title)
-                    .font(.title)
-                    .fontWeight(.bold)
-                
-                Text(movie.release_date)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
+//                Text(movie.title)
+//                    .font(.footnote)
+//                    .fontWeight(.bold)
+//                
+//                Text(movie.release_date)
+//                    .font(.subheadline)
+//                    .foregroundColor(.gray)
                 
             }
             .onTapGesture {
                 onMovieSelected(movie.id)
             }
-            .padding()
+            .padding(.bottom)
         }
         .onTapGesture {
             onMovieSelected(movie.id)
         }
-        .background(.ultraThinMaterial)
-        .cornerRadius(12)
-        .shadow(radius: 5)
-        .padding()
+//        .background(.ultraThinMaterial)
+//        .cornerRadius(12)
+//        .shadow(radius: 5)
+//        .padding()
     }
 }

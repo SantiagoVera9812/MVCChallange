@@ -22,7 +22,9 @@ struct PaginatorView: View {
             
         }
     }
+    .foregroundColor(AppTheme.AppColors.buttonBackground)
     .padding()
+    .background(AppTheme.AppColors.background)
     }
 }
 

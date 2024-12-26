@@ -34,7 +34,8 @@ class HostingControllerBuilder {
         createFunction: @escaping () -> Content
     ) {
         print("on hosting builder")
-        let hostingController = UIHostingController(rootView: createFunction())
+        let hostingController = UIHostingController(rootView: createFunction()
+            .edgesIgnoringSafeArea(.all))
         
         parent.addChild(hostingController)
         parent.view.addSubview(hostingController.view)
@@ -42,7 +43,7 @@ class HostingControllerBuilder {
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
                 
                 // Add constraints
-                NSLayoutConstraint.activate([
+        NSLayoutConstraint.activate([
                     hostingController.view.topAnchor.constraint(equalTo: parent.view.topAnchor),
                     hostingController.view.bottomAnchor.constraint(equalTo: parent.view.bottomAnchor),
                     hostingController.view.leadingAnchor.constraint(equalTo: parent.view.leadingAnchor),

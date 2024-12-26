@@ -42,7 +42,7 @@ struct MovieDetails: View {
                     .padding(.bottom, 20)
             }
         }
-        .background(Color(.systemGroupedBackground))
+//        .background(Color(.systemGroupedBackground))
         .ignoresSafeArea(edges: .top)
         .onAppear {
             print(movieId)

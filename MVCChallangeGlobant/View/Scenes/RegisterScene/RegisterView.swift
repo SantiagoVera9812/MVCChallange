@@ -29,37 +29,42 @@ struct RegisterView: View {
     
     var body: some View {
         
-        
-        VStack(spacing: 20) {
-            headerView
+        ZStack {
+            AppTheme.AppColors.background.ignoresSafeArea(.all)
             
-            VStack(spacing: 5) {
-                Text("Correo:")
-                TextField("Email", text: $email)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .onSubmit {
-                        // Move to password field
-                    }
+            VStack(spacing: 20) {
+                
+                //            headerView
+                
+                VStack(spacing: 5) {
+                    Text("Correo:")
+                    TextField("Email", text: $email)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onSubmit {
+                            // Move to password field
+                        }
+                }
+                
+                VStack(spacing: 5) {
+                    Text("Contraseña:")
+                    SecureField("Contraseña", text: $password)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .onSubmit {
+                            doSignIn()
+                        }
+                }
+                
+                Button(action: doSignIn) {
+                    Text("Registrarse")
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Color.blue)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
             }
-            
-            VStack(spacing: 5) {
-                Text("Contraseña:")
-                SecureField("Contraseña", text: $password)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .onSubmit {
-                        doSignIn()
-                    }
+            .padding(20)
             }
-            
-            Button(action: doSignIn) {
-                Text("Registrarse")
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(Color.blue)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
-            }
-        }
         }
         
         private func doSignIn() {

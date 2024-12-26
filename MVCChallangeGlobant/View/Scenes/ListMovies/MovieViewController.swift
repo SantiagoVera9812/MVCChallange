@@ -191,6 +191,7 @@ extension MovieViewController{
         let movieController = MovieViewController(viewType: .grid, loginUser: onLoginUser, language: language)
         
         movieController.tabBarItem.image = UIImage(systemName: "star.fill")
+//        movieController.view.backgroundColor = UIColor.red
         
         return movieController
         
