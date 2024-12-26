@@ -34,8 +34,8 @@ class HostingControllerBuilder {
         createFunction: @escaping () -> Content
     ) {
         print("on hosting builder")
-        let hostingController = UIHostingController(rootView: createFunction()
-            .edgesIgnoringSafeArea(.all))
+        let hostingController = UIHostingController(rootView: createFunction())
+        
         
         parent.addChild(hostingController)
         parent.view.addSubview(hostingController.view)
@@ -55,3 +55,4 @@ class HostingControllerBuilder {
         
     }
 }
+

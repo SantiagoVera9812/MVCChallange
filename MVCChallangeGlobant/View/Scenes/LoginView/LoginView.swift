@@ -75,11 +75,12 @@ struct LoginView: View {
                     .foregroundColor(AppTheme.AppColors.buttonBackground)
                 }
             }
+            .ignoresSafeArea(edges: .all)
             .padding(20)
             //        .background(Color.white)
             //        .cornerRadius(12)
             //        .shadow(radius: 10)
-        }
+        }.ignoresSafeArea(edges: .all)
     }
     
     private func doRecoverPassword(){

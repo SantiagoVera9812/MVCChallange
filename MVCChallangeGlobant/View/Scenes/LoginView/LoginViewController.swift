@@ -66,6 +66,7 @@ class LoginViewController: UIViewController, LoginViewDelegate{
             print("Preferred language code: \(languageCode)")
             
             let movieViewController = TabBarController.buildCars(onLoginUser: loginUser, language: languageCode)
+            
                 self.navigationController?.pushViewController(movieViewController, animated: true)
         } else {
             
@@ -102,10 +103,15 @@ extension LoginViewController {
     
     func createLoginView() -> some View {
         print("login view")
+        
+        
             var loginView = LoginView()
             loginView.delegate = self
             
-            return AnyView(loginView)
+        return AnyView(ZStack {
+            AppTheme.AppColors.background.ignoresSafeArea(.all)
+            loginView
+        })
         }
 }
 
