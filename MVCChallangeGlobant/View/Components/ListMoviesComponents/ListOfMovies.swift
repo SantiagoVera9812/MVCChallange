@@ -81,7 +81,6 @@ struct ListHorizontalMovieViews: View {
   ]
   var body: some View {
       ZStack {
-          AppTheme.AppColors.background.ignoresSafeArea(.all)
           ScrollView {
               LazyVGrid(columns: columns, spacing: 5) { // Uniform spacing between rows
                   ForEach(listOfMovies, id: \.id) { movieFound in
