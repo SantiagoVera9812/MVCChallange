@@ -12,33 +12,19 @@ struct MVCChallangeGlobantApp: App {
     var body: some Scene {
         WindowGroup {
             
-            
-            UIViewControllerWrapper {
+        
+            UIViewControllerWrapper{
                 let loginViewController = LoginViewController()
-                let navigationController = CustomNavigationController(rootViewController: loginViewController)
+                let navigationController = UINavigationController(rootViewController: loginViewController)
                 
                 return navigationController
+                                                                
+                                                                      
             }
         }
     }
 }
 
-class CustomNavigationController: UINavigationController {
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        
-        if let window = self.view.window {
-            let safeAreaInsets = window.safeAreaInsets
-            var newFrame = window.bounds
-            newFrame.origin.y = -safeAreaInsets.top 
-            newFrame.size.height += safeAreaInsets.top
-            
-            self.view.frame = newFrame
-        }
-    }
-}
-
-// Generic UIViewController Wrapper
 
 
 

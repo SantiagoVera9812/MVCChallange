@@ -108,10 +108,9 @@ extension LoginViewController {
             var loginView = LoginView()
             loginView.delegate = self
             
-        return AnyView(ZStack {
-            AppTheme.AppColors.background.ignoresSafeArea(.all)
+        return AnyView(
             loginView
-        })
+        )
         }
 }
 

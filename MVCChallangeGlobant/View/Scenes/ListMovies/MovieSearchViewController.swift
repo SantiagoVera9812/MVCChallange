@@ -247,14 +247,14 @@ extension MovieSearchViewController {
             // Combine the search view and grid layout view
             return AnyView(
                 
-                ZStack{
-                    AppTheme.AppColors.background.ignoresSafeArea(.all)
+                
+                    
                     VStack {
                         searchView // Display the search view
                         gridLayoutView
                         paginator// Display the grid layout view
                     }
-                })
+                )
         }
     
     

@@ -26,7 +26,6 @@ struct GridLayoutView: View {
     var body: some View {
     
         ZStack {
-            AppTheme.AppColors.background.ignoresSafeArea(.all)
             
             VStack {
                 

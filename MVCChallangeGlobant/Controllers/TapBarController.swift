@@ -31,14 +31,11 @@ class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
             super.viewDidLoad()
-            // Set the tint color for all tab bar items
-            self.tabBar.tintColor = UIColor.red
-        self.tabBar.barTintColor = UIColor.blue// Change to your desired color
+            
         }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.tabBar.barTintColor = UIColor.blue
         self.navigationStyle.configure(self)
     }
     

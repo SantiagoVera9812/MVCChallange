@@ -23,7 +23,7 @@ struct LoginView: View {
     var body: some View {
         
         ZStack{
-            AppTheme.AppColors.background.ignoresSafeArea(.all)
+            
             
             VStack(spacing: 60) {
         
@@ -31,10 +31,10 @@ struct LoginView: View {
                 
                 VStack(spacing: 5) {
                     Text("Correo:")
-                        .foregroundColor(AppTheme.AppColors.text)
+                        
                         .fontWeight(.heavy)
                     TextField("Email", text: $email)
-                        .background(AppTheme.AppColors.textFields)
+                        
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .onSubmit {
                             // Move to password field
@@ -43,7 +43,7 @@ struct LoginView: View {
                 
                 VStack(spacing: 5) {
                     Text("Contraseña:")
-                        .foregroundColor(AppTheme.AppColors.text)
+                        
                         .fontWeight(.heavy)
                     SecureField("Contraseña", text: $password)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
